@@ -79,7 +79,7 @@ while True:
         pt.x, pt.y = p[0], p[1]
         point2fList.append(pt)
     cfg.setWarpTransformFourPoints(point2fList, False)
-    cfg.setResize(256, 256)
+    cfg.setResize(192, 192)
     cfg.setFrameType(ImgFrame.Type.RGB888p)
     node.io['to_manip_cfg'].send(cfg)
     inference = node.io['from_pd_nn'].get().getLayerFp16("Identity")

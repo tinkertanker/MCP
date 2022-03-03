@@ -214,7 +214,7 @@ class MovenetDepthai:
         print("Creating pipeline...")
         # Start defining a pipeline
         pipeline = dai.Pipeline()
-        pipeline.setOpenVINOVersion(dai.OpenVINO.Version.VERSION_2021_3)
+        pipeline.setOpenVINOVersion(dai.OpenVINO.Version.VERSION_2021_4)
 
         # ColorCamera
         print("Creating Color Camera...")

@@ -489,7 +489,7 @@ while True:
     print(info_set)
     if pose1:
         cv2.putText(frame, pose1, (frame.shape[1] // 2, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0,190,255), 3)
-    key = renderer.waitKey(delay=2)
+    key = renderer.waitKey(delay=5)
     if key == 27 or key == ord('q'):
        break
 renderer.exit()

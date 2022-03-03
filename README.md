@@ -23,7 +23,7 @@ For edge mode
 
 ## CSV Folder 
 
-The ```fitness_poses_csvs_out_processed_f ``` contains csv files, each for each pose. It contains information on the sample images of each class. The first column is the image name, and next there are x and y coordinates corresponding to each joint point for that image, nose, left eye, right eye and so on. It contains x and y coordinates for 17 joint keypoints.
+The ```fitness_poses_csvs_out_processed_f ``` contains csv files, one for each pose. It contains information on the sample images of each class. The first column is the image name, and next there are x and y coordinates corresponding to each joint point for that image, nose, left eye, right eye and so on. It contains x and y coordinates for 17 joint keypoints.
  To create more poses, change line 46 of data_col.py to the name of the new pose.
 
 # MCP

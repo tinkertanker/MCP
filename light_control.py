@@ -45,12 +45,12 @@ class Lights:
     ]
 
     def set_color(self, side, x, y, color=(255,255,255)):
-        index = mapping[side][y][x]
+        index = self.mapping[side][y][x]
         if index >= 0:
             pixels[index] = tuple(color)
 
     def clear(self):
-        pixels.fill(0,0,0)
+        pixels.fill((0,0,0))
 
     def show(self):
         pixels.show()

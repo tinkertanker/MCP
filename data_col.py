@@ -43,7 +43,7 @@ renderer = MovenetRenderer(
     pose,
     output=args.output)
 #edit the file below to make new poses
-file = open('fitness_poses_csvs_out_processed_f/rightup.csv', 'w')
+file = open('tempcsv/rightup.csv', 'w')
 file.truncate(0)
 writer = csv.writer(file)
 

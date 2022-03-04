@@ -6,6 +6,55 @@ Light Control Module for Marina Central Project
 
 from tkinter import Tk, Canvas, Frame, BOTH
 
+pixels = None
+try:
+    import board
+    import neopixel
+    pixels = neopixel.NeoPixel(board.D18, 179, brightness=1.0, auto_write=False)
+except:
+    print("Couldn't initialize physical lights.")
+
+class Lights:
+    # mapping is an array of side, y, x coordinates to LED number
+    mapping = [
+        [ # side 0,
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+        ],
+        [ # side 1 (left)
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+        ],
+        [ # side 2 (right)
+            [5, 6, 18, 19, 31, 32, 44, 45, 57, 58, 70],
+            [4, 7, 17, 20, 30, 33, 43, 46, 56, 59, 69],
+            [3, 8, 16, 21, 29, 34, 42, 47, 55, 60, 68],
+            [2, 9, 15, 22, 28, 35, 41, 48, 54, 61, 67],
+            [1, 10, 14, 23, 27, 36, 40, 49, 53, 62, 66],
+            [0, 11, 13, 24, 26, 37, 39, 50, 52, 63, 65],
+            [-1, 12, -1, 25, -1, 38, -1, 51, -1, 64, -1],
+        ]
+    ]
+
+    def set_color(self, side, x, y, color=(255,255,255)):
+        index = mapping[side][y][x]
+        if index >= 0:
+            pixels[index] = tuple(color)
+
+    def clear(self):
+        pixels.fill(0,0,0)
+
+    def show(self):
+        pixels.show()
+
 class Simulator(Frame):
 
     def __init__(self):
@@ -104,6 +153,9 @@ class LightControl:
     def __init__(self, simulate=True):
         self.simulate = simulate
         self.sim_frame, self.tk_root = None, None
+        self.lights = None
+        if pixels is not None:
+            self.lights = Lights()
 
         if simulate:
             self.tk_root = Tk()
@@ -118,10 +170,14 @@ class LightControl:
     def set_color(self, side, x, y, color=(255,255,255)):
         if self.simulate:
             self.sim_frame.set_color(side, x, y, color)
+        if self.lights:
+            self.lights.set_color(side, x, y, color)
     
     def clear(self):
         if self.simulate:
             self.sim_frame.clear()
+        if self.lights:
+            self.lights.clear()
 
     def rainbow_grid(self):
         for x in range(0,9):
@@ -139,6 +195,8 @@ class LightControl:
     def show(self):
         if self.simulate:
             self.tk_root.update()
+        if self.lights:
+            self.lights.show()
 
 
 if __name__ == '__main__':

@@ -100,6 +100,7 @@ node.warn("Processing node started")
 init_crop_region = ${_init_crop_region}
 crop_region = init_crop_region
 result_buffer = Buffer(759)
+keypoints_buffer = Buffer(759)
 while True:
     # Send cropping information to manip node on device
     cfg = ImageManipConfig()
@@ -130,6 +131,11 @@ while True:
 
     result_buffer.getData()[:] = result_serial
     node.io['to_host'].send(result_buffer)
+    
+    keypoints = [list(zip(result["x"], result["y"]))]
+    keypoints_serial = marshal.dumps(keypoints)
+    keypoints_buffer.setData(keypoints_serial)
+    node.io['to_pr_nn'].send(keypoints_buffer) # sends keypoints
 
     crop_region = next_crop_region
 

@@ -1,0 +1,1 @@
+CLASS_NAMES = ['squat', 'surren', 'mountain', 'triangle1', 'downwarddog', 'rightdab', 'cobra', 'leftdab']

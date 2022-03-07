@@ -4,7 +4,6 @@ import sys
 sys.path.append("..")
 from MovenetDepthaiEdge import MovenetDepthai, KEYPOINT_DICT
 from MovenetRenderer import MovenetRenderer
-from PoseRecognition import PoseRecogniser
 import argparse
 import numpy as np
 import os
@@ -461,9 +460,7 @@ def recognize_pose(b):
 
         # posef = pose
         # return posef
-        
-        inferred_pose = pose_recogniser.infer(b)
-        return inferred_pose
+        pass
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-m", "--model", type=str, choices=['lightning', 'thunder'], default='thunder',
@@ -476,18 +473,17 @@ args = parser.parse_args()
 
 pose = MovenetDepthai(input_src=args.input, model=args.model)
 renderer = MovenetRenderer(pose, output=args.output)
-pose_recogniser = PoseRecogniser()
 
 while True:
     # Run blazepose on next frame
-    frame, body = pose.next_frame()
+    frame, body, detection = pose.next_frame()
     if frame is None: break
     # Draw 2d skeleton
     frame = renderer.draw(frame, body)
     # Gesture recognition
-    pose1 = recognize_pose(body)
-    if pose1:
-        cv2.putText(frame, pose1, (frame.shape[1] // 2, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0,190,255), 3)
+    #pose1 = recognize_pose(body)
+    if detection:
+        cv2.putText(frame, detection, (frame.shape[1] // 2, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0,190,255), 3)
     key = renderer.waitKey(delay=1)
     if key == 27 or key == ord('q'):
         break

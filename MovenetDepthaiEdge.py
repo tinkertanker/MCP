@@ -5,7 +5,10 @@ from collections import namedtuple
 from pathlib import Path
 from FPS import FPS
 import depthai as dai
+from depthai_sdk.managers import NNetManager
 import time
+import blobconverter
+from models.class_names import CLASS_NAMES
 
 from math import gcd
 from string import Template
@@ -13,6 +16,8 @@ from string import Template
 SCRIPT_DIR = Path(__file__).resolve().parent
 MOVENET_LIGHTNING_MODEL = SCRIPT_DIR / "models/movenet_singlepose_lightning_U8_transpose.blob"
 MOVENET_THUNDER_MODEL = SCRIPT_DIR / "models/movenet_singlepose_thunder_U8_transpose.blob"
+POSE_RECOGNITION_MODEL_XML = SCRIPT_DIR / "models/pose_recognition.xml"
+POSE_RECOGNITION_MODEL_BIN = SCRIPT_DIR / "models/pose_recognition.bin"
 
 # Dictionary that maps from joint names to keypoint indices.
 KEYPOINT_DICT = {
@@ -202,6 +207,7 @@ class MovenetDepthai:
         if not self.laconic:
             self.q_video = self.device.getOutputQueue(name="cam_out", maxSize=1, blocking=False)
         self.q_processing_out = self.device.getOutputQueue(name="processing_out", maxSize=4, blocking=False)
+        self.q_pose_out = self.device.getOutputQueue(name="pose_out", maxSize=1, blocking=False)
         # For debugging
         # self.q_manip_out = self.device.getOutputQueue(name="manip_out", maxSize=1, blocking=False)
    
@@ -209,6 +215,8 @@ class MovenetDepthai:
 
         self.nb_frames = 0
         self.nb_pd_inferences = 0
+
+        self.pose_nnm = NNetManager(inputSize=(1, 34), labels=CLASS_NAMES, confidence=0.001)
 
     def create_pipeline(self):
         print("Creating pipeline...")
@@ -265,15 +273,30 @@ class MovenetDepthai:
         processing_script = pipeline.create(dai.node.Script)
         processing_script.setScript(self.build_processing_script())
         
-
         pd_nn.out.link(processing_script.inputs['from_pd_nn'])
         processing_script.outputs['to_manip_cfg'].link(manip.inputConfig)
-
+        
         # Define link to send result to host 
         processing_out = pipeline.create(dai.node.XLinkOut)
         processing_out.setStreamName("processing_out")
-
         processing_script.outputs['to_host'].link(processing_out.input)
+        
+        # Define neural network to recognize pose
+        print("creating pose recognition neural network")
+        pr_nn = pipeline.create(dai.node.NeuralNetwork)
+        pose_blob_path = blobconverter.from_openvino(
+            xml=str(Path(POSE_RECOGNITION_MODEL_XML).resolve().absolute()),
+            bin=str(Path(POSE_RECOGNITION_MODEL_BIN).resolve().absolute()),
+            data_type="FP16",
+            shaves=6,
+        )
+        pr_nn.setBlobPath(pose_blob_path)
+        processing_script.outputs['to_pr_nn'].link(pr_nn.input) 
+        
+        # Define link to send pose to host
+        pose_out = pipeline.create(dai.node.XLinkOut)
+        pose_out.setStreamName("pose_out")
+        pr_nn.out.link(pose_out.input)
 
         print("Pipeline created.")
 
@@ -338,6 +361,8 @@ class MovenetDepthai:
         # Get result from device
         inference = self.q_processing_out.get()
         body = self.pd_postprocess(inference)
+        det = self.q_pose_out.get()
+        detection = self.pose_nnm.decode(det)
         self.crop_region = body.next_crop_region
 
         # Statistics
@@ -345,7 +370,7 @@ class MovenetDepthai:
             self.nb_frames += 1
             self.nb_pd_inferences += 1
 
-        return frame, body
+        return frame, body, detection
 
 
     def exit(self):

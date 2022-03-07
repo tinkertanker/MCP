@@ -1,4 +1,6 @@
+from distutils.log import debug
 import marshal
+import re
 import numpy as np
 import cv2
 from collections import namedtuple
@@ -342,6 +344,11 @@ class MovenetDepthai:
         next_crop_region = CropRegion(**result["next_crop_region"])
         body = Body(scores, keypoints_norm, keypoints, self.score_thresh, self.crop_region, next_crop_region)
         return body
+    
+    def pr_postprocess(self, detection):
+        pred = detection.getFirstLayerFp16()
+        pred_label = CLASS_NAMES[np.argmax(pred)]
+        return pred_label
 
     def next_frame(self):
 
@@ -362,7 +369,7 @@ class MovenetDepthai:
         inference = self.q_processing_out.get()
         body = self.pd_postprocess(inference)
         det = self.q_pose_out.get()
-        detection = self.pose_nnm.decode(det)
+        detection = self.pr_postprocess(det)
         self.crop_region = body.next_crop_region
 
         # Statistics

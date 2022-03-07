@@ -3,6 +3,7 @@ This file is the template of the scripting node source code in edge mode
 Substitution is made in MovenetDepthaiEdge.py
 """
 import marshal
+import itertools
 
 def torso_visible(scores):
     """Checks whether there are enough torso keypoints.
@@ -132,7 +133,7 @@ while True:
     result_buffer.getData()[:] = result_serial
     node.io['to_host'].send(result_buffer)
     
-    keypoints = [list(zip(result["x"], result["y"]))]
+    keypoints = list(itertools.chain(*zip(result["x"], result["y"])))
     keypoints_serial = marshal.dumps(keypoints)
     keypoints_buffer.setData(keypoints_serial)
     node.io['to_pr_nn'].send(keypoints_buffer) # sends keypoints

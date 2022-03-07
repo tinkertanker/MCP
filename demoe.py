@@ -4,6 +4,7 @@ import sys
 sys.path.append("..")
 from MovenetDepthaiEdge import MovenetDepthai, KEYPOINT_DICT
 from MovenetRenderer import MovenetRenderer
+from PoseRecognition import PoseRecogniser
 import argparse
 import numpy as np
 import os
@@ -426,40 +427,43 @@ class PoseClassifier(object):
 
 def recognize_pose(b):  
 
-        pose_embedder = FullBodyPoseEmbedder()
+        # pose_embedder = FullBodyPoseEmbedder()
 
-        pose_classifier = PoseClassifier(
-                pose_samples_folder='./fitness_poses_csvs_out_processed_f',
-                pose_embedder=pose_embedder,
-                top_n_by_max_distance=30,
-                top_n_by_mean_distance=10)
+        # pose_classifier = PoseClassifier(
+        #         pose_samples_folder='./fitness_poses_csvs_out_processed_f',
+        #         pose_embedder=pose_embedder,
+        #         top_n_by_max_distance=30,
+        #         top_n_by_mean_distance=10)
 
-        #assert b.keypoints.shape == (33, 3), 'Unexpected landmarks shape: {}'.format(b.keypoints.shape)
+        # #assert b.keypoints.shape == (33, 3), 'Unexpected landmarks shape: {}'.format(b.keypoints.shape)
 
-        # print(b.keypoints)
-        # print(type(b.keypoints))
+        # # print(b.keypoints)
+        # # print(type(b.keypoints))
 
-        b.keypoints = b.keypoints.astype('float32')
+        # b.keypoints = b.keypoints.astype('float32')
 
-        pose_classification = pose_classifier(b.keypoints)
+        # pose_classification = pose_classifier(b.keypoints)
 
-        pose_classification_filter = EMADictSmoothing(
-        window_size=10,
-        alpha=0.2)
+        # pose_classification_filter = EMADictSmoothing(
+        # window_size=10,
+        # alpha=0.2)
 
-            # Smooth classification using EMA.
-        pose_classification_filtered = pose_classification_filter(pose_classification)
+        #     # Smooth classification using EMA.
+        # pose_classification_filtered = pose_classification_filter(pose_classification)
 
-        max_sample = 0
-        pose = 0
+        # max_sample = 0
+        # pose = 0
 
-        for i in pose_classification_filtered.keys():
-            if pose_classification_filtered[i]>max_sample:
-                pose = i
-                max_sample = pose_classification_filtered[i]
+        # for i in pose_classification_filtered.keys():
+        #     if pose_classification_filtered[i]>max_sample:
+        #         pose = i
+        #         max_sample = pose_classification_filtered[i]
 
-        posef = pose
-        return posef
+        # posef = pose
+        # return posef
+        
+        inferred_pose = pose_recogniser.infer(b)
+        return inferred_pose
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-m", "--model", type=str, choices=['lightning', 'thunder'], default='thunder',
@@ -472,6 +476,7 @@ args = parser.parse_args()
 
 pose = MovenetDepthai(input_src=args.input, model=args.model)
 renderer = MovenetRenderer(pose, output=args.output)
+pose_recogniser = PoseRecogniser()
 
 while True:
     # Run blazepose on next frame

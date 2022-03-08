@@ -481,37 +481,10 @@ parser.add_argument("-o", "--output",
 args = parser.parse_args()
 
 pose = MovenetDepthai(input_src=args.input, model=args.model)
-renderer = MovenetRenderer(pose, output=args.output)
+#renderer = MovenetRenderer(pose, output=args.output)
 
 info_set = []
 
-pose_state = "default"
-
-def recog(lock):
-    global pose_state
-
-    while True:
-        # Run blazepose on next frame
-        frame, body = pose.next_frame()
-        if frame is None: break
-        # Draw 2d skeleton
-        frame = renderer.draw(frame, body)
-        # Gesture recognition
-        pose_info = recognize_pose(body)
-        pose1 = pose_info[0]
-        info_set = list(pose.crop_region[1:5]) + pose_info
-        print(info_set)
-        lock.acquire()
-        pose_state = info_set[4]
-        lock.release()
-        time.sleep(0.1)
-        if pose1:
-            cv2.putText(frame, pose1, (frame.shape[1] // 2, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 190, 255), 3)
-        key = renderer.waitKey(delay=1)
-        if key == 27 or key == ord('q'):
-            break
-    renderer.exit()
-    pose.exit()
 
 
 # !/usr/bin/env python3
@@ -636,16 +609,42 @@ class AnimController:
 
 # light count 63 : 71 : 45
 
+
+lc = LightControl(simulate=True)
+ac = AnimController(mode)
+# ac.getAnim(0).setActiveState(True)
+
+pose_state="default"
+
+def recog(lock):
+    global pose_state
+    while True:
+        # Run blazepose on next frame
+        frame, body = pose.next_frame()
+        if frame is None: break
+        # Draw 2d skeleton
+        #frame = renderer.draw(frame, body)
+        # Gesture recognition
+        pose_info = recognize_pose(body)
+        pose1 = pose_info[0]
+        info_set = list(pose.crop_region[1:5]) + pose_info
+        print(info_set)
+        pose_state = info_set[4]
+        if pose1:
+            cv2.putText(frame, pose1, (frame.shape[1] // 2, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 190, 255), 3)
+        #key = renderer.waitKey(delay=1)
+        #if key == 27 or key == ord('q'):
+        #    break
+    #renderer.exit()
+    pose.exit()
+
 def lightcon():
     global pose_state
     global animStateCounter
-    lc = LightControl(simulate=True)
-    ac = AnimController(mode)
-    # ac.getAnim(0).setActiveState(True)
-
     while True:
+        lock.acquire()
         # here we make the different anims trigger at diff times...
-        if (pose_state == "rightdab" or pose_state == "leftdab"):
+        if (pose_state == "leftdab" or pose_state == "rightdab"):
             ac.getAnim(0).setActiveState(True)
 
         elif (pose_state == "squat"):
@@ -653,7 +652,7 @@ def lightcon():
 
         else:
             ac.getAnim(2).setActiveState(True)
-
+        lock.release()
         lc.clear()
 
         # for seeing the top left and btm right boundaries of each panel
@@ -736,8 +735,7 @@ def lightcon():
 
 
 
-if __name__ == "__main__":
-    a = 0
+if __name__ == '__main__':
     # print ID of current process
     print("ID of process running main program: {}".format(os.getpid()))
 
@@ -747,12 +745,8 @@ if __name__ == "__main__":
     lock = threading.Lock()
 
     # creating threads
-    t1 = threading.Thread(target=recog(lock), name='t1')
-    t2 = threading.Thread(target=lightcon, name='t2')
-
+    t1 = threading.Thread(target=recog, name='t1',args=(lock,))
+    #t2 = threading.Thread(target=lightcon, name='t2',args=(lock,))
     # starting threads
     t1.start()
-    t2.start()
-
-    #lightcon()
-
+    lightcon()

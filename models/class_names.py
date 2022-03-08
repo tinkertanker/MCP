@@ -1,1 +1,1 @@
-CLASS_NAMES = ['squat', 'surren', 'mountain', 'triangle1', 'downwarddog', 'rightdab', 'cobra', 'leftdab']
+CLASS_NAMES = ['downwarddog', 'rightdab', 'cobra', 'mountain', 'leftdab', 'triangle1', 'squat', 'surren']

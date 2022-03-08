@@ -4,6 +4,7 @@ Substitution is made in MovenetDepthaiEdge.py
 """
 import marshal
 import itertools
+import sys
 
 def torso_visible(scores):
     """Checks whether there are enough torso keypoints.
@@ -95,13 +96,33 @@ def pd_postprocess(inference, crop_region):
     next_crop_region = determine_crop_region(scores, x, y) if ${_smart_crop} else init_crop_region
     return x, y, xnorm, ynorm, scores, next_crop_region
 
+def pr_preprocess(inference, crop_region): #same as above but floats
+        size = crop_region['size']
+        xmin = crop_region['xmin']
+        ymin = crop_region['ymin']
+        xnorm = []
+        ynorm = []
+        scores = []
+        x = []
+        y = []
+        for i in range(17):
+            xn = inference[3*i+1]
+            yn = inference[3*i]
+            xnorm.append(xn)
+            ynorm.append(yn)
+            scores.append(inference[3*i+2])
+            x.append(xmin + xn * size)
+            y.append(ymin + yn * size)
+            
+        next_crop_region = determine_crop_region(scores, x, y) if ${_smart_crop} else init_crop_region
+        return x, y, xnorm, ynorm, scores, next_crop_region
+
 node.warn("Processing node started")
 # Defines the default crop region (pads the full image from both sides to make it a square image) 
 # Used when the algorithm cannot reliably determine the crop region from the previous frame.
 init_crop_region = ${_init_crop_region}
 crop_region = init_crop_region
 result_buffer = Buffer(759)
-keypoints_buffer = Buffer(759)
 while True:
     # Send cropping information to manip node on device
     cfg = ImageManipConfig()
@@ -133,10 +154,12 @@ while True:
     result_buffer.getData()[:] = result_serial
     node.io['to_host'].send(result_buffer)
     
-    keypoints = list(itertools.chain(*zip(result["x"], result["y"])))
-    keypoints_serial = marshal.dumps(keypoints)
-    keypoints_buffer.setData(keypoints_serial)
-    node.io['to_pr_nn'].send(keypoints_buffer) # sends keypoints
+
+    xfloat, yfloat, _, _, _, _ = pr_preprocess(inference, crop_region)
+    keypoints = list(itertools.chain(*zip(xfloat, yfloat)))
+    keypoints_data = NNData(1156)
+    keypoints_data.setLayer('input', keypoints)
+    node.io['to_pr_nn'].send(keypoints_data) # sends keypoints
 
     crop_region = next_crop_region
 

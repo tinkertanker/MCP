@@ -1,5 +1,7 @@
 
 import marshal
+import itertools
+import sys
 def torso_visible(scores):
     return ((scores[11] > 0.2 or
             scores[12] > 0.2) and
@@ -62,6 +64,25 @@ def pd_postprocess(inference, crop_region):
         y.append(int(ymin + yn * size)) 
     next_crop_region = determine_crop_region(scores, x, y) if True else init_crop_region
     return x, y, xnorm, ynorm, scores, next_crop_region
+def pr_preprocess(inference, crop_region): 
+        size = crop_region['size']
+        xmin = crop_region['xmin']
+        ymin = crop_region['ymin']
+        xnorm = []
+        ynorm = []
+        scores = []
+        x = []
+        y = []
+        for i in range(17):
+            xn = inference[3*i+1]
+            yn = inference[3*i]
+            xnorm.append(xn)
+            ynorm.append(yn)
+            scores.append(inference[3*i+2])
+            x.append(xmin + xn * size)
+            y.append(ymin + yn * size)
+        next_crop_region = determine_crop_region(scores, x, y) if True else init_crop_region
+        return x, y, xnorm, ynorm, scores, next_crop_region
 node.warn("Processing node started")
 init_crop_region = {'xmin': 0, 'ymin': -252, 'xmax': 1152, 'ymax': 900, 'size': 1152}
 crop_region = init_crop_region
@@ -88,4 +109,9 @@ while True:
     result_serial = marshal.dumps(result)
     result_buffer.getData()[:] = result_serial
     node.io['to_host'].send(result_buffer)
+    xfloat, yfloat, _, _, _, _ = pr_preprocess(inference, crop_region)
+    keypoints = list(itertools.chain(*zip(xfloat, yfloat)))
+    keypoints_data = NNData(1156)
+    keypoints_data.setLayer('input', keypoints)
+    node.io['to_pr_nn'].send(keypoints_data) 
     crop_region = next_crop_region

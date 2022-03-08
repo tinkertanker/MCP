@@ -7,7 +7,6 @@ from collections import namedtuple
 from pathlib import Path
 from FPS import FPS
 import depthai as dai
-from depthai_sdk.managers import NNetManager
 import time
 import blobconverter
 from models.class_names import CLASS_NAMES
@@ -210,6 +209,7 @@ class MovenetDepthai:
             self.q_video = self.device.getOutputQueue(name="cam_out", maxSize=1, blocking=False)
         self.q_processing_out = self.device.getOutputQueue(name="processing_out", maxSize=4, blocking=False)
         self.q_pose_out = self.device.getOutputQueue(name="pose_out", maxSize=1, blocking=False)
+        self.q_debug_out = self.device.getOutputQueue(name="debug_out", maxSize=1, blocking=False)
         # For debugging
         # self.q_manip_out = self.device.getOutputQueue(name="manip_out", maxSize=1, blocking=False)
    
@@ -218,7 +218,6 @@ class MovenetDepthai:
         self.nb_frames = 0
         self.nb_pd_inferences = 0
 
-        self.pose_nnm = NNetManager(inputSize=(1, 34), labels=CLASS_NAMES, confidence=0.001)
 
     def create_pipeline(self):
         print("Creating pipeline...")
@@ -286,6 +285,7 @@ class MovenetDepthai:
         # Define neural network to recognize pose
         print("creating pose recognition neural network")
         pr_nn = pipeline.create(dai.node.NeuralNetwork)
+        pose_blob_path = str(Path(SCRIPT_DIR / "models/pose_recognition.blob").resolve().absolute())
         pose_blob_path = blobconverter.from_openvino(
             xml=str(Path(POSE_RECOGNITION_MODEL_XML).resolve().absolute()),
             bin=str(Path(POSE_RECOGNITION_MODEL_BIN).resolve().absolute()),
@@ -299,6 +299,12 @@ class MovenetDepthai:
         pose_out = pipeline.create(dai.node.XLinkOut)
         pose_out.setStreamName("pose_out")
         pr_nn.out.link(pose_out.input)
+
+        # Debug
+        debug_out = pipeline.create(dai.node.XLinkOut)
+        debug_out.setStreamName("debug_out")
+        processing_script.outputs['to_pr_nn'].link(debug_out.input)
+
 
         print("Pipeline created.")
 
@@ -347,6 +353,7 @@ class MovenetDepthai:
     
     def pr_postprocess(self, detection):
         pred = detection.getFirstLayerFp16()
+        print(pred)
         pred_label = CLASS_NAMES[np.argmax(pred)]
         return pred_label
 
@@ -371,6 +378,9 @@ class MovenetDepthai:
         det = self.q_pose_out.get()
         detection = self.pr_postprocess(det)
         self.crop_region = body.next_crop_region
+
+        debug = self.q_debug_out.get()
+        #print(debug.getData())
 
         # Statistics
         if self.stats:

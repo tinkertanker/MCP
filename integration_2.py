@@ -659,85 +659,10 @@ def lightcon():
         else:
             ac.getAnim(2).setActiveState(True)
         #lock.release()
+        lc.show()
         lc.clear()
 
-        # for seeing the top left and btm right boundaries of each panel
-        # showPanelBoundaries(lc)
 
-        # Printing some Diagnostic stuff
-        #print('\nglobalcounter: ', globalCounter)
-
-        animst = [0, 0, 0]
-        animfr = [0, 0, 0]
-
-        for i in range(0, ac.getTotalAnims()):
-            animst[i] = str(ac.getAnim(i).isActive())
-            animfr[i] = str(ac.getAnim(i).getCurrentFrame())
-
-        print('anim states: ', animst[0], ':', animfr[0], ' ', animst[1], ':', animfr[1], ' ', animst[2], ':',
-              animfr[2])
-
-        offsets1 = 0
-
-        for x in range(0, 9):
-            for y in range(0, 7):
-                # cd = ac.getAnim(0).getColorData(x + y*9)
-                cd = ac.getCombinedColor(x + y * 9)
-                lc.set_color(1, x, y, [cd[0], cd[1], cd[2]])
-
-                offsets1 += 1
-
-        # print('offsets1: ', offsets1)
-        offsets2 = offsets1
-
-        for x in range(0, 11):
-            for y in range(0, 7):
-                # cd2 = ac.getAnim(0).getColorData(x + (y*11) + offsets1)
-                cd2 = ac.getCombinedColor(x + (y * 11) + offsets1)
-                lc.set_color(2, x, y, [cd2[0], cd2[1], cd2[2]])
-
-                offsets2 += 1
-
-        # print('offsets2: ', offsets2)
-
-        for x in range(0, 9):
-            for y in range(0, 5):
-                # cd3 = ac.getAnim(0).getColorData(x + (y*9) + offsets2)
-                cd3 = ac.getCombinedColor(x + (y * 9) + offsets2)
-                lc.set_color(0, x, y, [cd3[0], cd3[1], cd3[2]])
-
-        lc.show()
-        time.sleep(playbackFramerate)
-
-        if (mode == 2):  # stepping mode
-            ipt = input()
-            if (ipt == ','):
-                print('<- ', advanceByFrames)
-                animStateCounter -= advanceByFrames
-
-            elif (ipt == '.'):
-                print(advanceByFrames, '->')
-                animStateCounter += advanceByFrames
-
-            elif (ipt.strip().isdigit()):
-                advanceByFrames = int(ipt)
-                print('advanceByFrames changed to:', advanceByFrames)
-
-            if (animStateCounter >= animMaxFrames):
-                animStateCounter = 0
-            elif (animStateCounter < 0):
-                animStateCounter = animMaxFrames - 1
-
-        else:  # normal playback mode
-            # ac.getAnim(0).advance()
-            for i in range(0, ac.getTotalAnims()):
-                if (ac.getAnim(i).isActive()):
-                    ac.getAnim(i).advance()
-
-            if (animStateCounter == animMaxFrames - 1):
-                animStateCounter = 0
-            else:
-                animStateCounter += 1
 
 
 

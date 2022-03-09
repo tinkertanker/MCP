@@ -15,6 +15,10 @@ except:
     print("Couldn't initialize physical lights.")
 
 class Lights:
+    def __del__(self):
+        self.clear()
+        self.show()
+        
     # mapping is an array of side, y, x coordinates to LED number
     mapping = [
         [ # side 0,

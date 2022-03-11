@@ -458,8 +458,12 @@ def recognize_pose(b):
             if pose_classification_filtered[i]>max_sample:
                 pose = i
                 max_sample = pose_classification_filtered[i]
-
-        posef = pose
+        
+        if max_sample > 6:
+          posef = pose
+        else:
+          posef = "fuzz"
+          
         return [posef, list(pose_classification_filtered.items())]
 
 parser = argparse.ArgumentParser()

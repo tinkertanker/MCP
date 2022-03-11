@@ -43,7 +43,7 @@ renderer = MovenetRenderer(
     pose,
     output=args.output)
 #edit the file below to make new poses
-file = open('tempcsv/rightdab.csv', 'w')
+file = open('tempcsv/rightsuperman.csv', 'w')
 file.truncate(0)
 writer = csv.writer(file)
 

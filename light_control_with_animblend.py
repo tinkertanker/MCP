@@ -74,9 +74,10 @@ class AnimLoader:
 class AnimController:
     def __init__(self, playbackMode):
         self.anims = [None, None, None]
-        self.anims[0] = AnimLoader('./data/anim1_animData.txt', 51, playbackMode)
-        self.anims[1] = AnimLoader('./data/anim2_animData.txt', 51, playbackMode)
-        self.anims[2] = AnimLoader('./data/anim3_animData.txt', 51, playbackMode) 
+        self.anims[0] = AnimLoader('./data/anim0_animData.txt', 51, playbackMode)   # test grid
+        self.anims[1] = AnimLoader('./data/anim1_animData.txt', 51, playbackMode)
+        self.anims[2] = AnimLoader('./data/anim2_animData.txt', 51, playbackMode)
+        self.anims[3] = AnimLoader('./data/anim3_animData.txt', 51, playbackMode) 
 
     def getTotalAnims(self):
         return len(self.anims)
@@ -130,14 +131,14 @@ if __name__ == '__main__':
 
     while True:
         # here we make the different anims trigger at diff times...
-        if(globalCounter % 40 == 0):
+        if(globalCounter % 51 == 0):
             ac.getAnim(0).setActiveState(True)
 
-        if(globalCounter % 75 == 0):
-            ac.getAnim(1).setActiveState(True)
+        # if(globalCounter % 75 == 0):
+        #     ac.getAnim(1).setActiveState(True)
 
-        if(globalCounter % 130 == 0):
-            ac.getAnim(2).setActiveState(True)
+        # if(globalCounter % 130 == 0):
+        #     ac.getAnim(2).setActiveState(True)
 
 
         lc.clear()

@@ -50,11 +50,12 @@ class Lights:
 
     def set_color(self, side, x, y, color=(255,255,255)):
         index = self.mapping[side][y][x]
-        if index >= 0:
+        if index >= 0 and index != -1:
             if(side == 2):
                 index += 63
             if(side == 0):
                 index += 63 + 71   
+            
             pixels[index] = tuple(color)
 
     def clear(self):

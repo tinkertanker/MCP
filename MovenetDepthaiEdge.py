@@ -218,7 +218,8 @@ class MovenetDepthai:
 
         # ColorCamera
         print("Creating Color Camera...")
-        cam = pipeline.create(dai.node.ColorCamera) 
+        cam = pipeline.create(dai.node.ColorCamera)
+        cam.setImageOrientation(dai.CameraImageOrientation.ROTATE_180_DEG)
         cam.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
         cam.setInterleaved(False)
         cam.setIspScale(self.scale_nd[0], self.scale_nd[1])

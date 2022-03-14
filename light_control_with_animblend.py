@@ -4,12 +4,19 @@ from light_control import LightControl
 import time
 import numpy as np
 
+
 #global vars
 animStateCounter = 0
 animMaxFrames = 51
 globalCounter = 1   # pls start at 1 !
-totalAnims = 3
-playbackFramerate = 25/1000
+_anims = [  './data/anim0_animData.txt',   # test grid
+            './data/anim1_animData.txt',
+            './data/anim2_animData.txt',
+            './data/anim3_animData.txt' ]
+_totalAnims = len(_anims)
+framerate = 25
+playbackFramerate = 1 / framerate
+
 
 # 1 is normal playback,
 # 2 is frame stepping mode
@@ -42,7 +49,8 @@ class AnimLoader:
         colorData = colorData.reshape(self.framecount,185,3)  #179
         
         print("Modified shape = ",colorData.shape)
-        print("data =", colorData[42,2,:])
+        print("data =", colorData[6,2,:])
+        print("data =", colorData[7,2,:])
 
         self.colorData = colorData
 
@@ -72,14 +80,15 @@ class AnimLoader:
 
 
 class AnimController:
-    def __init__(self, playbackMode):
-        self.anims = [None, None, None]
-        self.anims[0] = AnimLoader('./data/anim1_animData.txt', 51, playbackMode)
-        self.anims[1] = AnimLoader('./data/anim2_animData.txt', 51, playbackMode)
-        self.anims[2] = AnimLoader('./data/anim3_animData.txt', 51, playbackMode) 
+    def __init__(self, playbackMode, anims):
+        self.totalAnims = len(anims)
+        self.anims = [None] * self.totalAnims
+
+        for i in range(0, len(anims)):
+            self.anims[i] = AnimLoader(anims[i], 51, playbackMode)
 
     def getTotalAnims(self):
-        return len(self.anims)
+        return self.totalAnims
 
     def getAnim(self, i):
         return self.anims[i]
@@ -88,13 +97,15 @@ class AnimController:
         return self.anims[i].isActive()
 
     def getCombinedColor(self, pos):
-        cd = [None, None, None]
+        # cd = [None] * self.getTotalAnims()
         final_cd = [0,0,0]
         activeAnims = 0
 
         for i in range(0, len(self.anims)):
             if(self.anims[i].isActive()):
                 activeAnims += 1
+
+        # print('activeAnims: ', activeAnims)
 
         if(activeAnims == 0):
             return [0,0,0]
@@ -104,14 +115,13 @@ class AnimController:
             
             # print('p: ', p)
 
-            for i in range(0, len(self.anims)):
-                cd[i] = np.asarray([0,0,0])
+            for i in range(0, self.getTotalAnims()):
+                if(self.anims[i].isActive()):
+                    # print('self.anims[i].isActive: ', i)
+                    cd = np.asarray( self.anims[i].getColorData(pos) )
+                    # print('cd: ', cd)
 
-                if(self.anims[i].isActive):
-                    cd[i] = np.asarray( self.anims[i].getColorData(pos) )
-                    # print('cd[i]: ', cd[i])
-
-                    final_cd += cd[i]*p
+                    final_cd += cd * p
 
             final_cd = [int(final_cd[0]), int(final_cd[1]), int(final_cd[2])]
             
@@ -122,21 +132,20 @@ class AnimController:
 # light count 63 : 71 : 45 
 
 if __name__ == '__main__':
-    lc = LightControl(simulate=True)
-    ac = AnimController(mode)
-    # ac.getAnim(0).setActiveState(True)
+    # lc = LightControl(simulate=True)
+    lc = LightControl(simulate=False)
+    ac = AnimController(mode, _anims)
+
+    ac.getAnim(3).setActiveState(True)
     
 
     while True:
         # here we make the different anims trigger at diff times...
-        if(globalCounter % 40 == 0):
-            ac.getAnim(0).setActiveState(True)
+        # if(globalCounter % 51 == 0):
+        #     ac.getAnim(0).setActiveState(True)
 
-        if(globalCounter % 75 == 0):
-            ac.getAnim(1).setActiveState(True)
-
-        if(globalCounter % 130 == 0):
-            ac.getAnim(2).setActiveState(True)
+        # if(globalCounter % 102 == 0):
+        #     ac.getAnim(1).setActiveState(True)
 
 
         lc.clear()
@@ -148,14 +157,14 @@ if __name__ == '__main__':
         # Printing some Diagnostic stuff
         print('\nglobalcounter: ', globalCounter)
 
-        animst = [0,0,0]
-        animfr = [0,0,0]
+        animst = [0] * _totalAnims # anim state
+        animfr = [0] * _totalAnims # anim frame
         
-        for i in range(0, ac.getTotalAnims()):
+        for i in range(0, _totalAnims):
             animst[i] = str(ac.getAnim(i).isActive())
             animfr[i] = str(ac.getAnim(i).getCurrentFrame())
 
-        print('anim states: ', animst[0],':',animfr[0],' ', animst[1],':',animfr[1], ' ', animst[2],':',animfr[2] )
+            print('== Anim', i, ':', animfr[i], ' ==')
 
 
 
@@ -176,6 +185,7 @@ if __name__ == '__main__':
             for y in range(0,7):
                 # cd2 = ac.getAnim(0).getColorData(x + (y*11) + offsets1)
                 cd2 = ac.getCombinedColor(x + (y*11) + offsets1)
+                # print('cd2:', cd2)
                 lc.set_color(2, x, y, [ cd2[0], cd2[1], cd2[2] ])
                 
                 offsets2 += 1

@@ -133,8 +133,8 @@ class AnimController:
 # light count 63 : 71 : 45 
 
 if __name__ == '__main__':
-    lc = LightControl(simulate=True)
-    # lc = LightControl(simulate=False)
+    # lc = LightControl(simulate=True)
+    lc = LightControl(simulate=False)
     ac = AnimController(mode, _anims)
 
     # ac.getAnim(1).setActiveState(True)

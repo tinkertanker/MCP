@@ -10,11 +10,11 @@ animStateCounter = 0
 animMaxFrames = 51
 globalCounter = 1   # pls start at 1 !
 _anims = [  './data/anim0_animData.txt',   # test grid
-            './data/anim1_animData.txt',
+            './data/anim4_animData.txt',
             './data/anim2_animData.txt',
             './data/anim3_animData.txt' ]
 _totalAnims = len(_anims)
-framerate = 25
+framerate = 30
 playbackFramerate = 1 / framerate
 
 
@@ -132,17 +132,17 @@ class AnimController:
 # light count 63 : 71 : 45 
 
 if __name__ == '__main__':
-    # lc = LightControl(simulate=True)
-    lc = LightControl(simulate=False)
+    lc = LightControl(simulate=True)
+    # lc = LightControl(simulate=False)
     ac = AnimController(mode, _anims)
 
-    ac.getAnim(3).setActiveState(True)
+    # ac.getAnim(1).setActiveState(True)
     
 
     while True:
         # here we make the different anims trigger at diff times...
-        # if(globalCounter % 51 == 0):
-        #     ac.getAnim(0).setActiveState(True)
+        if(globalCounter % 51 == 0):
+            ac.getAnim(1).setActiveState(True)
 
         # if(globalCounter % 102 == 0):
         #     ac.getAnim(1).setActiveState(True)

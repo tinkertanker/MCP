@@ -601,8 +601,15 @@ class AnimController:
                     # print('cd[i]: ', cd[i])
 
                     final_cd += cd[i] * p
+            def limiter(num):
+                if num>255:
+                    return 255
+                elif num<0:
+                    return 0
+                else:
+                    return int(num)
 
-            final_cd = [int(final_cd[0]), int(final_cd[1]), int(final_cd[2])]
+            final_cd = [limiter(final_cd[0]), limiter(final_cd[1]), limiter(final_cd[2])]
 
             return final_cd
 

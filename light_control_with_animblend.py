@@ -10,9 +10,10 @@ animStateCounter = 0
 animMaxFrames = 51
 globalCounter = 1   # pls start at 1 !
 _anims = [  './data/anim0_animData.txt',   # test grid
-            './data/anim4_animData.txt',
+            './data/anim1_animData.txt',
             './data/anim2_animData.txt',
-            './data/anim3_animData.txt' ]
+            './data/anim3_animData.txt',
+            './data/anim4_animData.txt' ]
 _totalAnims = len(_anims)
 framerate = 30
 playbackFramerate = 1 / framerate
@@ -141,11 +142,11 @@ if __name__ == '__main__':
 
     while True:
         # here we make the different anims trigger at diff times...
-        if(globalCounter % 51 == 0):
+        if(globalCounter % 1 == 0):
             ac.getAnim(1).setActiveState(True)
 
         # if(globalCounter % 102 == 0):
-        #     ac.getAnim(1).setActiveState(True)
+        #     ac.getAnim(4).setActiveState(True)
 
 
         lc.clear()

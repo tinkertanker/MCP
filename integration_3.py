@@ -615,7 +615,7 @@ class AnimController:
 
 
 lc = LightControl(simulate=False)
-ac = AnimController(mode)
+ac = AnimController(mode, _anims)
 # ac.getAnim(0).setActiveState(True)
 
 pose_state="default"

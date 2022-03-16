@@ -9,13 +9,16 @@ import numpy as np
 animStateCounter = 0
 animMaxFrames = 51
 globalCounter = 1   # pls start at 1 !
-_anims = [  './data/anim0_animData.txt',   # test grid
-            './data/anim1_animData.txt',
-            './data/anim2_animData.txt',
-            './data/anim3_animData.txt',
-            './data/anim4_animData.txt' ]
+_anims = [  ['./data/anim0_animData.txt',51],   # test grid
+            ['./data/anim1_animData.txt',51],   # circle
+            ['./data/anim2_animData.txt',51],
+            ['./data/anim3_animData.txt',51],
+            ['./data/anim4_animData.txt',101],  # rest
+            ['./data/anim5_animData.txt',101],  # right dab
+            ['./data/anim6_animData.txt',151]   # squat
+        ]
 _totalAnims = len(_anims)
-framerate = 30
+framerate = 25
 playbackFramerate = 1 / framerate
 
 
@@ -27,14 +30,6 @@ playbackFramerate = 1 / framerate
 mode = 1    
 advanceByFrames = 1
 
-
-def showPanelBoundaries(lc):
-    lc.set_color(1, 0, 0, [ 255,255,255 ])
-    lc.set_color(1, 8, 6, [ 255,255,255 ])
-    lc.set_color(2, 0, 0, [ 255,255,255 ])
-    lc.set_color(2, 9, 6, [ 255,255,255 ])
-    lc.set_color(0, 0, 0, [ 255,255,255 ])
-    lc.set_color(0, 8, 4, [ 255,255,255 ])
 
 
 class AnimLoader:
@@ -86,7 +81,7 @@ class AnimController:
         self.anims = [None] * self.totalAnims
 
         for i in range(0, len(anims)):
-            self.anims[i] = AnimLoader(anims[i], 51, playbackMode)
+            self.anims[i] = AnimLoader(anims[i][0], anims[i][1], playbackMode)
 
     def getTotalAnims(self):
         return self.totalAnims
@@ -133,8 +128,8 @@ class AnimController:
 # light count 63 : 71 : 45 
 
 if __name__ == '__main__':
-    # lc = LightControl(simulate=True)
-    lc = LightControl(simulate=False)
+    lc = LightControl(simulate=True)
+    # lc = LightControl(simulate=False)
     ac = AnimController(mode, _anims)
 
     # ac.getAnim(1).setActiveState(True)
@@ -143,10 +138,16 @@ if __name__ == '__main__':
     while True:
         # here we make the different anims trigger at diff times...
         if(globalCounter % 1 == 0):
-            ac.getAnim(1).setActiveState(True)
+            ac.getAnim(5).setActiveState(True)
 
-        # if(globalCounter % 102 == 0):
-        #     ac.getAnim(4).setActiveState(True)
+        # if(globalCounter % 51 == 0):
+        #     ac.getAnim(6).setActiveState(True)
+
+        # if(globalCounter % 71 == 0):
+        #     ac.getAnim(1).setActiveState(True)
+        
+        # if(globalCounter % 123 == 0):
+        #     ac.getAnim(3).setActiveState(True)
 
 
         lc.clear()

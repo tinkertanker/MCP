@@ -13,9 +13,9 @@ _anims = [  ['./data/anim0_animData.txt',51],   # test grid
             ['./data/anim1_animData.txt',51],   # circle
             ['./data/anim2_animData.txt',51],
             ['./data/anim3_animData.txt',51],
-            ['./data/anim4_animData.txt',101],  # rest
+            ['./data/anim4_animData.txt',101],  # idle
             ['./data/anim5_animData.txt',101],  # right dab
-            ['./data/anim6_animData.txt',151]   # squat
+            ['./data/anim6_animData.txt',76]   # squat
         ]
 _totalAnims = len(_anims)
 framerate = 25

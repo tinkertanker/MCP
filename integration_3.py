@@ -682,15 +682,15 @@ def lightcon():
         # Printing some Diagnostic stuff
         #print('\nglobalcounter: ', globalCounter)
 
-        animst = [0, 0, 0]
-        animfr = [0, 0, 0]
+        animst = [0] * _totalAnims  # anim state
+        animfr = [0] * _totalAnims  # anim frame
 
-        for i in range(0, ac.getTotalAnims()):
+        for i in range(0, _totalAnims):
             animst[i] = str(ac.getAnim(i).isActive())
             animfr[i] = str(ac.getAnim(i).getCurrentFrame())
 
-        print('anim states: ', animst[0], ':', animfr[0], ' ', animst[1], ':', animfr[1], ' ', animst[2], ':',
-              animfr[2])
+            print('== Anim', i, ':', animfr[i], ' ==')
+
 
         offsets1 = 0
 

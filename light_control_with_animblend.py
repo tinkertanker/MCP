@@ -6,6 +6,7 @@ import numpy as np
 
 
 #global vars
+selectAnim = 6
 animStateCounter = 0
 animMaxFrames = 51
 globalCounter = 1   # pls start at 1 !
@@ -128,8 +129,8 @@ class AnimController:
 # light count 63 : 71 : 45 
 
 if __name__ == '__main__':
-    lc = LightControl(simulate=True)
-    # lc = LightControl(simulate=False)
+    # lc = LightControl(simulate=True)
+    lc = LightControl(simulate=False)
     ac = AnimController(mode, _anims)
 
     # ac.getAnim(1).setActiveState(True)
@@ -138,7 +139,7 @@ if __name__ == '__main__':
     while True:
         # here we make the different anims trigger at diff times...
         if(globalCounter % 1 == 0):
-            ac.getAnim(5).setActiveState(True)
+            ac.getAnim(selectAnim).setActiveState(True)
 
         # if(globalCounter % 51 == 0):
         #     ac.getAnim(6).setActiveState(True)

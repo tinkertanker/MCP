@@ -10,11 +10,13 @@ import numpy as np
 _anims = [  ['./data/anim0_animData.txt', 51],       # 0. test grid
             ['./data/y_animData.txt', 51],           # 1. Y-pose
             ['./data/tri_animData.txt', 76],         # 2. tri
-            ['./data/anim3_animData.txt', 51],       # 3. 
-            ['./data/anim4_animData.txt', 101],      # 4. idle
-            ['./data/anim5_animData.txt', 101],      # 5. right dab
+            ['./data/crane_animData.txt', 151],       # 3. crane
+            ['./data/leftdab_animData.txt', 51],      # 4. left dab
+            ['./data/rightdab_animData.txt', 51],      # 5. right dab
             ['./data/squat_animData.txt', 126],       # 6. squat 
-            ['./data/idle_Pink_animData.txt', 76]    # 7. idle pink
+            ['./data/idle_Pink_animData.txt', 76],    # 7. idle pink
+            ['./data/leftsuperman_animData.txt', 141]  # 8. left superman
+            #['./data/rightsuperman_animData.txt', 141]    # 9. right superman
         ]
 _totalAnims = len(_anims)
 

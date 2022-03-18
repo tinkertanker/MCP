@@ -8,7 +8,8 @@ from anim_control import AnimController
 
 #   global vars
 isSim = True
-selectAnim = 6
+selectAnim = 8
+
 framerate = 25
 
 #   fixed global vars

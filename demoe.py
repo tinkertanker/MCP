@@ -424,15 +424,19 @@ class PoseClassifier(object):
 
     return result
 
+pose_embedder = FullBodyPoseEmbedder()
+
+pose_classifier = PoseClassifier(
+        pose_samples_folder='./fitness_poses_csvs_out_processed_f',
+        pose_embedder=pose_embedder,
+        top_n_by_max_distance=30,
+        top_n_by_mean_distance=10)
+
+pose_classification_filter = EMADictSmoothing(window_size=10, alpha=0.2)
+
+
 def recognize_pose(b):  
 
-        pose_embedder = FullBodyPoseEmbedder()
-
-        pose_classifier = PoseClassifier(
-                pose_samples_folder='./fitness_poses_csvs_out_processed_f',
-                pose_embedder=pose_embedder,
-                top_n_by_max_distance=30,
-                top_n_by_mean_distance=10)
 
         #assert b.keypoints.shape == (33, 3), 'Unexpected landmarks shape: {}'.format(b.keypoints.shape)
 
@@ -440,12 +444,11 @@ def recognize_pose(b):
         # print(type(b.keypoints))
 
         b.keypoints = b.keypoints.astype('float32')
-
+        pose_size = pose_embedder._get_pose_size(b.keypoints, 2.5)
+        if pose_size < 300:
+          return None
         pose_classification = pose_classifier(b.keypoints)
 
-        pose_classification_filter = EMADictSmoothing(
-        window_size=10,
-        alpha=0.2)
 
             # Smooth classification using EMA.
         pose_classification_filtered = pose_classification_filter(pose_classification)
@@ -459,7 +462,10 @@ def recognize_pose(b):
                 max_sample = pose_classification_filtered[i]
 
         posef = pose
-        return posef
+        if max_sample > 9.9:
+          return posef
+        else:
+          return None
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-m", "--model", type=str, choices=['lightning', 'thunder'], default='thunder',

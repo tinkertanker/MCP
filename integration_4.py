@@ -566,23 +566,30 @@ def lightcon():
         #print(threading.current_thread())
         #lock.acquire()
         # here we make the different anims trigger at diff times...
-        if (pose_state == "rightdab"):
-            ac.getAnim(5).setActiveState(True)
+        active = True
+        for i in range(0,6):
+            if i ==4:
+                continue
+            if ac.getAnim(i).isActive():
+                active = True
+        if ~active:
+            if (pose_state == "rightdab"):
+                ac.getAnim(5).setActiveState(True)
 
-        elif (pose_state == "squat"):
-            ac.getAnim(6).setActiveState(True)
+            elif (pose_state == "squat"):
+                ac.getAnim(6).setActiveState(True)
 
-        elif (pose_state == "stand"):
-            ac.getAnim(4).setActiveState(True)
+            elif (pose_state == "stand"):
+                ac.getAnim(4).setActiveState(True)
 
-        elif (pose_state == "y")    :
-            ac.getAnim(1).setActiveState(True)
-        elif (pose_state == "crane")    :
-            ac.getAnim(0).setActiveState(True)
-        elif (pose_state == "leftsuperman"):
-            ac.getAnim(3).setActiveState(True)
-        elif (pose_state == "rain_dance"):
-            ac.getAnim(2).setActiveState(True)
+            elif (pose_state == "y")    :
+                ac.getAnim(1).setActiveState(True)
+            elif (pose_state == "crane")    :
+                ac.getAnim(0).setActiveState(True)
+            elif (pose_state == "leftsuperman"):
+                ac.getAnim(3).setActiveState(True)
+            elif (pose_state == "rain_dance"):
+                ac.getAnim(2).setActiveState(True)
 
         # Printing some Diagnostic stuff
         print('\nglobalcounter: ', globalCounter)

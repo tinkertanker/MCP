@@ -495,7 +495,7 @@ import numpy as np
 from anim_control import AnimController
 
 #   global vars
-isSim = True
+isSim = False
 selectAnim = 8
 
 framerate = 25

@@ -554,7 +554,7 @@ def recog(lock):
             #if key == 27 or key == ord('q'):
             #    break
         else:
-            time.sleep(1.5)
+            time.sleep(5)
     #renderer.exit()
     pose.exit()
 
@@ -581,9 +581,8 @@ def lightcon():
                 isRun = False
                 ac.getAnim(7).setActiveState(False)
         if isRun:
-            ac.getAnim(7).setActiveState(True)
+            lc.clear()
             time.sleep(3)
-            ac.getAnim(7).setActiveState(False)
             if (pose_state == "rain_dance"):
                 ac.getAnim(0).setActiveState(True)
             elif (pose_state == "y"):

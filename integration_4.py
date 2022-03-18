@@ -583,9 +583,7 @@ def lightcon():
                 isRun = False
                 ac.getAnim(7).setActiveState(False)
         if isRun:
-            if isStand:
-                continue
-            else:
+            if not isStand:
                 lc.clear()
                 lc.show()
             time.sleep(3)

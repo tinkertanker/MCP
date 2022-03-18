@@ -16,8 +16,7 @@ class AnimPlayer():
     def play_once(self, anim_index, delay_after=1.0):
 
         if self.playing_idle:
-            # TODO: quickly fade out
-            pass
+            self.light_controller.quick_fade()
         
         if anim_index < self.anim_controller.getTotalAnims():
             anim = self.anim_controller.getAnim(anim_index)

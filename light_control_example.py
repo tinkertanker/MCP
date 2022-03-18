@@ -11,7 +11,8 @@ while True:
 
         lc.rainbow_grid()
         lc.show()
-        time.sleep(0.1)
+        time.sleep(1)
+        lc.quick_fade()
 
     lc.clear()
 

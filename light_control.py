@@ -5,6 +5,7 @@ Light Control Module for Marina Central Project
 """
 
 from tkinter import Tk, Canvas, Frame, BOTH
+import time
 
 pixels = None
 try:
@@ -163,6 +164,21 @@ class LightControl:
         self.simulate = simulate
         self.sim_frame, self.tk_root = None, None
         self.lights = None
+
+        self.buffer = [[],[],[]]
+        for x in range(0,9):
+            self.buffer[1].append([])
+            for y in range(0,7):
+                self.buffer[1][x].append((0,0,0))
+        for x in range(0,11):
+            self.buffer[2].append([])
+            for y in range(0,7):
+                self.buffer[2][x].append((0,0,0))
+        for x in range(0,9):
+            self.buffer[0].append([])
+            for y in range(0,5):
+                self.buffer[0][x].append((0,0,0))
+
         if pixels is not None:
             self.lights = Lights()
 
@@ -181,7 +197,25 @@ class LightControl:
             self.sim_frame.set_color(side, x, y, color)
         if self.lights:
             self.lights.set_color(side, x, y, color)
+        self.buffer[side][x][y] = color
+
     
+    def quick_fade(self):
+        for i in range(0,16):
+            for x in range(0,9):
+                for y in range(0,7):
+                    self.set_color(1, x, y, tuple([int(c/1.3) for c in self.buffer[1][x][y]]))
+
+            for x in range(0,11):
+                for y in range(0,7):
+                    self.set_color(2, x, y, tuple([int(c/1.3) for c in self.buffer[2][x][y]]))
+
+            for x in range(0,9):
+                for y in range(0,5):
+                    self.set_color(0, x, y, tuple([int(c/1.3) for c in self.buffer[0][x][y]]))
+            self.show()
+            time.sleep(0.06)
+
     def clear(self):
         if self.simulate:
             self.sim_frame.clear()

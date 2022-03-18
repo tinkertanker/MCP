@@ -553,6 +553,8 @@ def recog(lock):
             #key = renderer.waitKey(delay=1)
             #if key == 27 or key == ord('q'):
             #    break
+        else:
+            time.sleep(1.5)
     #renderer.exit()
     pose.exit()
 

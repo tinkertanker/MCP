@@ -581,6 +581,7 @@ def lightcon():
             elif ac.getAnim(i).isActive():
                 isRun = False
                 ac.getAnim(7).setActiveState(False)
+
         if isRun:
             lc.clear()
             lc.show()

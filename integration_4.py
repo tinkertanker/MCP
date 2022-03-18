@@ -582,6 +582,7 @@ def lightcon():
                 ac.getAnim(7).setActiveState(False)
         if isRun:
             lc.clear()
+            lc.show()
             time.sleep(3)
             if (pose_state == "rain_dance"):
                 ac.getAnim(0).setActiveState(True)

@@ -582,6 +582,8 @@ def lightcon():
                 isRun = False
                 ac.getAnim(7).setActiveState(False)
         if isRun:
+            lc.clear()
+            lc.show()
             time.sleep(3)
             if (pose_state == "rain_dance"):
                 ac.getAnim(0).setActiveState(True)
@@ -598,7 +600,7 @@ def lightcon():
             elif (pose_state == "squat" or pose_state == "squat_close"):
                 ac.getAnim(6).setActiveState(True)
             elif (pose_state == "stand"):
-                ac.getAnim(7).setActiveState(True)
+                ac.getAnim(7).setActiveState(False)
             elif (pose_state == "leftsuperman"):
                 ac.getAnim(8).setActiveState(True)
 
@@ -614,7 +616,6 @@ def lightcon():
         lc.show()
         time.sleep(playbackFramerate)
         lc.clear()
-        lc.show()
         ac.advanceFrame()
 
         globalCounter += 1

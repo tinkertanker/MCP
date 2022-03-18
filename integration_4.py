@@ -526,6 +526,8 @@ ac = AnimController()
 
 pose_state="default"
 
+isRun = True
+
 def recog(lock):
     global pose_state
     global isRun

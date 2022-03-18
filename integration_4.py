@@ -568,29 +568,31 @@ def lightcon():
         # here we make the different anims trigger at diff times...
         detect = True
         for i in range(0,9):
-            if i ==4:
+            if i ==7:
                 continue
             if ac.getAnim(i).isActive():
                 detect = False
-                ac.getAnim(4).setActiveState(False)
+                ac.getAnim(7).setActiveState(False)
         if detect:
-            if (pose_state == "rightdab"):
-                ac.getAnim(5).setActiveState(True)
-
-            elif (pose_state == "squat"):
-                ac.getAnim(6).setActiveState(True)
-
-            elif (pose_state == "stand"):
-                ac.getAnim(4).setActiveState(True)
-
-            elif (pose_state == "y")    :
-                ac.getAnim(1).setActiveState(True)
-            elif (pose_state == "crane")    :
+            if (pose_state == "rain_dance"):
                 ac.getAnim(0).setActiveState(True)
-            elif (pose_state == "leftsuperman"):
-                ac.getAnim(3).setActiveState(True)
-            elif (pose_state == "rain_dance"):
+            elif (pose_state == "y"):
+                ac.getAnim(1).setActiveState(True)
+            elif (pose_state == "triangle1"):
                 ac.getAnim(2).setActiveState(True)
+            elif (pose_state == "crane"):
+                ac.getAnim(3).setActiveState(True)
+            elif (pose_state == "leftdab"):
+                ac.getAnim(4).setActiveState(True)
+            elif (pose_state == "rightdab"):
+                ac.getAnim(5).setActiveState(True)
+            elif (pose_state == "squat" or pose_state == "squat_close"):
+                ac.getAnim(6).setActiveState(True)
+            elif (pose_state == "stand"):
+                ac.getAnim(7).setActiveState(True)
+            elif (pose_state == "leftsuperman"):
+                ac.getAnim(8).setActiveState(True)
+
 
         # Printing some Diagnostic stuff
         print('\nglobalcounter: ', globalCounter)

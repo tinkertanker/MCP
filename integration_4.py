@@ -567,11 +567,12 @@ def lightcon():
         #lock.acquire()
         # here we make the different anims trigger at diff times...
         detect = True
-        for i in range(0,6):
+        for i in range(0,9):
             if i ==4:
                 continue
             if ac.getAnim(i).isActive():
                 detect = False
+                ac.getAnim(4).setActiveState(False)
         if detect:
             if (pose_state == "rightdab"):
                 ac.getAnim(5).setActiveState(True)

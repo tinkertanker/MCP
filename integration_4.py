@@ -607,15 +607,13 @@ def lightcon():
         print('\nglobalcounter: ', globalCounter)
 
         ac.printState()
-
-        lc.clear()
         setLightColor(9, 7, ac, 0, lc, 1)
         setLightColor(11, 7, ac, 63, lc, 2)
         setLightColor(9, 5, ac, 140, lc, 0)
 
         lc.show()
         time.sleep(playbackFramerate)
-
+        lc.clear()
         ac.advanceFrame()
 
         globalCounter += 1

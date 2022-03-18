@@ -614,6 +614,7 @@ def lightcon():
         lc.show()
         time.sleep(playbackFramerate)
         lc.clear()
+        lc.show()
         ac.advanceFrame()
 
         globalCounter += 1

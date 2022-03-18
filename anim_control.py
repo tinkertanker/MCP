@@ -54,6 +54,9 @@ class AnimLoader:
     def getCurrentFrame(self):
         return self.frameCounter
 
+    def resetFrame(self):
+        self.frameCounter = 0
+
     def advance(self, dir=1, step=1):
         self.frameCounter += step * dir
 

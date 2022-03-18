@@ -528,7 +528,10 @@ pose_state="default"
 
 def recog(lock):
     global pose_state
+    global isRun
     while True:
+        if isRun:
+            continue
         #print( "recog")
         #print(threading.current_thread())
         # Run blazepose on next frame
@@ -561,19 +564,20 @@ def setLightColor(xRange, yRange, animctrl, offset, lightctrl, panelNum):
 def lightcon():
     global pose_state
     global globalCounter
+    global isRun
     while True:
         #print( "LC")
         #print(threading.current_thread())
         #lock.acquire()
         # here we make the different anims trigger at diff times...
-        detect = True
+        isRun = True
         for i in range(0,9):
             if i ==7:
                 continue
             if ac.getAnim(i).isActive():
-                detect = False
+                isRun = False
                 ac.getAnim(7).setActiveState(False)
-        if detect:
+        if isRun:
             ac.getAnim(7).setActiveState(True)
             time.sleep(3)
             ac.getAnim(7).setActiveState(False)
@@ -627,7 +631,7 @@ if __name__ == '__main__':
 
     # creating threads
     t1 = threading.Thread(target=recog, name='t1',args=(lock,))
-    #t2 = threading.Thread(target=lightcon, name='t2',args=(lock,))
+    t2 = threading.Thread(target=lightcon, name='t2')
     # starting threads
     t1.start()
-    lightcon()
+    t2.start()

@@ -574,15 +574,20 @@ def lightcon():
         #lock.acquire()
         # here we make the different anims trigger at diff times...
         isRun = True
+        isStand = False
         for i in range(0,9):
             if i ==7:
+                isStand = True
                 continue
             if ac.getAnim(i).isActive():
                 isRun = False
                 ac.getAnim(7).setActiveState(False)
         if isRun:
-            lc.clear()
-            lc.show()
+            if isStand:
+                continue
+            else:
+                lc.clear()
+                lc.show()
             time.sleep(3)
             if (pose_state == "rain_dance"):
                 ac.getAnim(0).setActiveState(True)

@@ -487,10 +487,12 @@ parser.add_argument("-f", "--frame-rate", type=int, help="Frame rate in FPS", de
 parser.add_argument("-i", "--idle-timeout", type=int, help="Idle timeout in seconds", default=30)
 parser.add_argument("-m", "--min-pose-size", type=int, help="Minimum Pose Size", default=300)
 parser.add_argument("-c", "--min-confidence", type=float, help="Minimum Confidence", default=9.8)
+parser.add_argument("-v", "--verbose", help="Enable Verbose Logging", default=False)
 parser.add_argument("-o", "--output", help="Path to output video file")
 args = parser.parse_args()
 
 graceful_killer = GracefulKiller()
+verbose = args.verbose
 anim_player = AnimPlayer(simulate=args.simulate, frame_rate=args.frame_rate, idle_anim_index=7, idle_intro_index=10)
 pose = MovenetDepthai(input_src='rgb', model='thunder')
 renderer = None
@@ -535,7 +537,8 @@ while not graceful_killer.kill_now:
     if (pose_info):
         pose1 = pose_info[0]
         info_set = list(pose.crop_region[1:5]) + pose_info
-        print(info_set)
+        if verbose:
+            print(info_set, flush=True)
         pose_state = info_set[4]
         if pose1 and renderer:
             cv2.putText(frame, pose1, (frame.shape[1] // 2, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 190, 255), 3)        

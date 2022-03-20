@@ -487,7 +487,7 @@ parser.add_argument("-o", "--output", help="Path to output video file")
 args = parser.parse_args()
 
 graceful_killer = GracefulKiller()
-anim_player = AnimPlayer(simulate=args.simulate, frame_rate=args.frame_rate, idle_anim_index=7, idle_intro_index=1)
+anim_player = AnimPlayer(simulate=args.simulate, frame_rate=args.frame_rate, idle_anim_index=7, idle_intro_index=10)
 pose = MovenetDepthai(input_src='rgb', model='thunder')
 renderer = None
 if args.preview:
@@ -533,7 +533,7 @@ while not graceful_killer.kill_now:
             cv2.putText(frame, pose1, (frame.shape[1] // 2, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 190, 255), 3)        
         
         if (pose_state == "rain_dance"):
-            anim_player.play_once(0)
+            anim_player.play_once(12)
         elif (pose_state == "y"):
             anim_player.play_once(1)
         elif (pose_state == "triangle1"):
@@ -550,6 +550,10 @@ while not graceful_killer.kill_now:
             pass
         elif (pose_state == "leftsuperman"):
             anim_player.play_once(8)
+        elif (pose_state == "rightsuperman"):
+            anim_player.play_once(9)
+        elif (pose_state == "leftup"):
+            anim_player.play_once(13)
         else:
             pose_state = "stand"
     else:

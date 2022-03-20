@@ -66,10 +66,14 @@ class AnimPlayer():
 
 if __name__ == '__main__':
 
-    anim_player = AnimPlayer(simulate=True, frame_rate=25, idle_anim_index=7, idle_intro_index=1)
-    anim_player.play_once(7)
-    anim_player.play_once(2)
+    anim_player = AnimPlayer(simulate=True, frame_rate=25, idle_anim_index=7, idle_intro_index=10)
+    
+    # for x in range(0, 13):
+    #     anim_player.play_once(x)
+    # anim_player.play_once(13)
+
     while True:
         anim_player.step_idle()
         time.sleep(1.0/25)
+        # anim_player.play_once(13)
 

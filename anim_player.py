@@ -28,9 +28,12 @@ class AnimPlayer():
                 time.sleep(self.frame_period)
                 if anim.getCurrentFrame() == 0:
                     anim.setActiveState(False)
-                    self.light_controller.clear()
-                    self.light_controller.show()
-                    time.sleep(delay_after)
+                    if (delay_after > 0):
+                        self.light_controller.clear()
+                        self.light_controller.show()
+                        time.sleep(delay_after)
+                    else:
+                        time.sleep(self.frame_period)
                     return
        
     def step_idle(self):

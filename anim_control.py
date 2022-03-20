@@ -7,7 +7,7 @@ Animation Control Module for Marina Central Project
 import numpy as np
 
 
-_anims = [  ['./data/anim0_animData.txt', 51],       # 0. test grid
+_anims = [  ['./data/testgrid_animData.txt', 51],       # 0. test grid
             ['./data/y_animData.txt', 51],           # 1. Y-pose
             ['./data/tri_animData.txt', 76],         # 2. tri
             ['./data/crane_animData.txt', 151],       # 3. crane
@@ -15,8 +15,12 @@ _anims = [  ['./data/anim0_animData.txt', 51],       # 0. test grid
             ['./data/rightdab_animData.txt', 51],      # 5. right dab
             ['./data/squat_animData.txt', 126],       # 6. squat 
             ['./data/idle_Pink_animData.txt', 76],    # 7. idle pink
-            ['./data/leftsuperman_animData.txt', 141]  # 8. left superman
-            #['./data/rightsuperman_animData.txt', 141]    # 9. right superman
+            ['./data/leftsuperman_animData.txt', 151],  # 8. left superman
+            ['./data/rightsuperman_animData.txt', 151],    # 9. right superman
+            ['./data/fadein_animData.txt', 26],           # 10. fadein
+            ['./data/fadeout_animData.txt', 26],          # 11. fadeout
+            ['./data/raindance_animData.txt', 91],       # 12. raindance
+            ['./data/leftup_animData.txt', 61]            # 13. leftup
         ]
 _totalAnims = len(_anims)
 

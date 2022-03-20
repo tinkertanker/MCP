@@ -5,18 +5,23 @@ from anim_control import AnimController
 
 class AnimPlayer():
 
-    def __init__(self, simulate = True, frame_rate = 25, idle_anim_index = 7, idle_intro_index = -1):
+    def __init__(self, simulate = True, frame_rate = 25, idle_anim_index = 7, idle_intro_index = -1, idle_outro_index = -1):
         self.frame_period = 1.0/frame_rate
         self.light_controller = LightControl(simulate = simulate)
         self.anim_controller = AnimController()
         self.playing_idle = False
         self.idle_anim_index = idle_anim_index
         self.idle_intro_index = idle_intro_index
+        self.idle_outro_index = idle_outro_index
     
     def play_once(self, anim_index, delay_after=1.0):
 
         if self.playing_idle:
-            self.light_controller.quick_fade()
+            self.playing_idle = False
+            if self.idle_outro_index != -1:
+                self.play_once(self.idle_outro_index, delay_after=0)
+            else:
+                self.light_controller.quick_fade()
         
         if anim_index < self.anim_controller.getTotalAnims():
             anim = self.anim_controller.getAnim(anim_index)
@@ -38,7 +43,7 @@ class AnimPlayer():
        
     def step_idle(self):
         if not self.playing_idle:
-            if self.idle_intro_index:
+            if self.idle_intro_index != -1:
                 self.play_once(self.idle_intro_index, delay_after=0)
             self.stop_all_anims() # implicitly resets frames to 0 too, also resets playing_idle
             self.playing_idle = True
@@ -69,14 +74,16 @@ class AnimPlayer():
 
 if __name__ == '__main__':
 
-    anim_player = AnimPlayer(simulate=True, frame_rate=25, idle_anim_index=7, idle_intro_index=10)
+    anim_player = AnimPlayer(simulate=True, frame_rate=25, idle_anim_index=7, idle_intro_index=10, idle_outro_index=11)
     
     # for x in range(0, 13):
     #     anim_player.play_once(x)
     # anim_player.play_once(13)
 
-    while True:
+    start_time = time.time()
+    while time.time() - start_time < 10:
         anim_player.step_idle()
         time.sleep(1.0/25)
         # anim_player.play_once(13)
+    anim_player.play_once(13)
 

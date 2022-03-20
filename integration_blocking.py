@@ -537,7 +537,7 @@ while not graceful_killer.kill_now:
         info_set = list(pose.crop_region[1:5]) + pose_info
         print(info_set)
         pose_state = info_set[4]
-        if pose1:
+        if pose1 and renderer:
             cv2.putText(frame, pose1, (frame.shape[1] // 2, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 190, 255), 3)        
         
         if (pose_state == "rain_dance"):

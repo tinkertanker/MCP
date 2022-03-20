@@ -445,7 +445,9 @@ class PoseClassifier(object):
         return result
 
 
-def recognize_pose(b):
+def recognize_pose(
+    b, pose_embedder, pose_classifier, pose_classification_filter,
+    min_pose_size=300, min_confidence=9.8):
 
     # assert b.keypoints.shape == (33, 3), 'Unexpected landmarks shape: {}'.format(b.keypoints.shape)
 
@@ -454,7 +456,7 @@ def recognize_pose(b):
 
     b.keypoints = b.keypoints.astype('float32')
     pose_size = pose_embedder._get_pose_size(b.keypoints, 2.5)
-    if pose_size < 300:
+    if pose_size < min_pose_size:
         return None
 
     pose_classification = pose_classifier(b.keypoints)
@@ -472,7 +474,7 @@ def recognize_pose(b):
 
     posef = pose
 
-    if max_sample < 9.8:
+    if max_sample < min_confidence:
         return None
     
     return [posef, list(pose_classification_filtered.items())]    
@@ -483,6 +485,8 @@ parser.add_argument("-p", "--preview", help="Enable Video Preview", action="stor
 parser.add_argument("-s", "--simulate", help="Enable Light Simulator", action="store_true", default=False)
 parser.add_argument("-f", "--frame-rate", type=int, help="Frame rate in FPS", default=25)
 parser.add_argument("-i", "--idle-timeout", type=int, help="Idle timeout in seconds", default=30)
+parser.add_argument("-m", "--min-pose-size", type=int, help="Minimum Pose Size", default=300)
+parser.add_argument("-c", "--min-confidence", type=float, help="Minimum Confidence", default=9.8)
 parser.add_argument("-o", "--output", help="Path to output video file")
 args = parser.parse_args()
 
@@ -494,6 +498,8 @@ if args.preview:
     renderer = MovenetRenderer(pose, output=args.output)
 
 pose_state = "stand"
+min_pose_size = args.min_pose_size
+min_confidence = args.min_confidence
 frame_rate = args.frame_rate
 frame_period = 1.0/frame_rate
 idle_timeout = args.idle_timeout
@@ -523,7 +529,9 @@ while not graceful_killer.kill_now:
         frame = renderer.draw(frame, body)
 
     # Gesture recognition
-    pose_info = recognize_pose(body)
+    pose_info = recognize_pose(body, pose_embedder, pose_classifier, pose_classification_filter,
+                               min_pose_size=min_pose_size,
+                               min_confidence=min_confidence)
     if (pose_info):
         pose1 = pose_info[0]
         info_set = list(pose.crop_region[1:5]) + pose_info

@@ -201,6 +201,7 @@ class MovenetDepthai:
         # Define data queues 
         if not self.laconic:
             self.q_video = self.device.getOutputQueue(name="cam_out", maxSize=1, blocking=False)
+        self.q_ctrl = device.getInputQueue(name="camControl")
         self.q_processing_out = self.device.getOutputQueue(name="processing_out", maxSize=4, blocking=False)
         # For debugging
         # self.q_manip_out = self.device.getOutputQueue(name="manip_out", maxSize=1, blocking=False)
@@ -237,6 +238,10 @@ class MovenetDepthai:
             cam_out = pipeline.create(dai.node.XLinkOut)
             cam_out.setStreamName("cam_out")
             cam.video.link(cam_out.input)
+
+        camControlIn = pipeline.create(dai.node.XLinkIn)
+        camControlIn.setStreamName("camControl")
+        camControlIn.out.link(cam.inputControl)
 
         # ImageManip for cropping
         manip = pipeline.create(dai.node.ImageManip)
@@ -348,6 +353,15 @@ class MovenetDepthai:
 
         return frame, body
 
+    def pause(self):
+        cfg = dai.CameraControl()
+        cfg.setStopStreaming()
+        self.q_ctrl.send(cfg)
+
+    def resume(self):
+        cfg = dai.CameraControl()
+        cfg.setStartStreaming()
+        self.q_ctrl.send(cfg)
 
     def exit(self):
         # Print some stats

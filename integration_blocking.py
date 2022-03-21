@@ -487,7 +487,7 @@ parser.add_argument("-f", "--frame-rate", type=int, help="Frame rate in FPS", de
 parser.add_argument("-i", "--idle-timeout", type=int, help="Idle timeout in seconds", default=30)
 parser.add_argument("-m", "--min-pose-size", type=int, help="Minimum Pose Size", default=300)
 parser.add_argument("-c", "--min-confidence", type=float, help="Minimum Confidence", default=9.8)
-parser.add_argument("-v", "--verbose", help="Enable Verbose Logging", default=False)
+parser.add_argument("-v", "--verbose", help="Enable Verbose Logging", action="store_true", default=False)
 parser.add_argument("-o", "--output", help="Path to output video file")
 args = parser.parse_args()
 

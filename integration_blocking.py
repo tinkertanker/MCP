@@ -577,7 +577,7 @@ while not graceful_killer.kill_now:
             anim_player.play_once(8)
         elif (pose_state == "rightsuperman"):
             anim_player.play_once(9)
-        elif (pose_state == "leftup"):
+        elif (pose_state == "leftup" or pose_state == "rightup"):
             anim_player.play_once(13)
         else:
             pose_state = "stand"

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import cv2
 from math import atan2, degrees
 import sys

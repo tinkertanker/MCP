@@ -11,7 +11,7 @@ pixels = None
 try:
     import board
     import neopixel
-    pixels = neopixel.NeoPixel(board.D18, 179, brightness=1.0, auto_write=False)
+    pixels = neopixel.NeoPixel(board.D18, 180, brightness=1.0, auto_write=False)
 except:
     print("Couldn't initialize physical lights.")
 
@@ -57,7 +57,7 @@ class Lights:
             if(side == 0):
                 index += 63 + 71   
             
-            pixels[index] = tuple(color)
+            pixels[index + 1] = tuple(color)
 
     def clear(self):
         pixels.fill((0,0,0))
@@ -214,7 +214,7 @@ class LightControl:
                 for y in range(0,5):
                     self.set_color(0, x, y, tuple([int(c/1.3) for c in self.buffer[0][x][y]]))
             self.show()
-            time.sleep(0.06)
+            time.sleep(0.01)
 
     def clear(self):
         if self.simulate:

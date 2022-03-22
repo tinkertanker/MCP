@@ -462,7 +462,9 @@ def recognize_pose(
     pose_classification = pose_classifier(b.keypoints)
 
     # Smooth classification using EMA.
-    pose_classification_filtered = pose_classification_filter(pose_classification)
+    pose_classification_filtered = pose_classification
+    if pose_classification_filter:
+        pose_classification_filtered = pose_classification_filter(pose_classification)
 
     max_sample = 0
     pose = 0
@@ -489,6 +491,7 @@ parser.add_argument("-m", "--min-pose-size", type=int, help="Minimum Pose Size (
 parser.add_argument("-c", "--min-confidence", type=float, help="Minimum Pose Classification Confidence (default=%(default)f)", default=9.8)
 parser.add_argument("-t", "--score_threshold", default=0.2, type=float,
                     help="Confidence score to determine whether a keypoint prediction is reliable (default=%(default)f)")
+parser.add_argument("-n", "--enable-smoothing", help="Enable Smoothing", action="store_true", default=False)
 parser.add_argument('-g', '--internal_fps', type=int,
                     help="Fps of internal color camera. Too high value lower NN fps (default: 12")  
 parser.add_argument("-v", "--verbose", help="Enable Verbose Logging", action="store_true", default=False)
@@ -524,9 +527,11 @@ pose_classifier = PoseClassifier(
     top_n_by_max_distance=30,
     top_n_by_mean_distance=10)
 
-pose_classification_filter = EMADictSmoothing(
-    window_size=10,
-    alpha=0.2)
+pose_classification_filter = None
+if args.enable_smoothing:
+    pose_classification_filter = EMADictSmoothing(
+        window_size=10,
+        alpha=0.2)
 
 while not graceful_killer.kill_now:
     # Run blazepose on next frame

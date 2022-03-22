@@ -489,6 +489,7 @@ while True:
     # Gesture recognition
     pose_info = recognize_pose(body)
     pose1 = pose_info[0]
+    #print(body.keypoints)
     info_set = list(pose.crop_region[1:5]) + pose_info
     print(info_set)
     #if pose1:

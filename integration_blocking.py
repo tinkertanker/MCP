@@ -519,7 +519,7 @@ time_last_idle_frame_played = time.time()
 pose_embedder = FullBodyPoseEmbedder()
 
 pose_classifier = PoseClassifier(
-    pose_samples_folder='./fitness_poses_csvs_out_processed_f',
+    pose_samples_folder='/home/pi/MCP/fitness_poses_csvs_out_processed_f',
     pose_embedder=pose_embedder,
     top_n_by_max_distance=30,
     top_n_by_mean_distance=10)

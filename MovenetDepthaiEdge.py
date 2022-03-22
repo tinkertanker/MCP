@@ -294,7 +294,7 @@ class MovenetDepthai:
         So we build this code from the content of the file template_processing_script.py which is a python template
         '''
         # Read the template
-        with open('template_processing_script.py', 'r') as file:
+        with open('/home/pi/MCP/template_processing_script.py', 'r') as file:
             template = Template(file.read())
         
         # Perform the substitution

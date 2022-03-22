@@ -483,18 +483,25 @@ def recognize_pose(
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--preview", help="Enable Video Preview", action="store_true",default=False)
 parser.add_argument("-s", "--simulate", help="Enable Light Simulator", action="store_true", default=False)
-parser.add_argument("-f", "--frame-rate", type=int, help="Frame rate in FPS", default=25)
-parser.add_argument("-i", "--idle-timeout", type=int, help="Idle timeout in seconds", default=30)
-parser.add_argument("-m", "--min-pose-size", type=int, help="Minimum Pose Size", default=300)
-parser.add_argument("-c", "--min-confidence", type=float, help="Minimum Confidence", default=9.8)
+parser.add_argument("-f", "--frame-rate", type=int, help="Animation Frame rate in FPS (default=%(default)i)", default=25)
+parser.add_argument("-i", "--idle-timeout", type=int, help="Idle timeout in seconds (default=%(default)i)", default=30)
+parser.add_argument("-m", "--min-pose-size", type=int, help="Minimum Pose Size (default=%(default)i)", default=300)
+parser.add_argument("-c", "--min-confidence", type=float, help="Minimum Pose Classification Confidence (default=%(default)f)", default=9.8)
+parser.add_argument("-t", "--score_threshold", default=0.2, type=float,
+                    help="Confidence score to determine whether a keypoint prediction is reliable (default=%(default)f)")
+parser.add_argument('-g', '--internal_fps', type=int,
+                    help="Fps of internal color camera. Too high value lower NN fps (default: 12")  
 parser.add_argument("-v", "--verbose", help="Enable Verbose Logging", action="store_true", default=False)
 parser.add_argument("-o", "--output", help="Path to output video file")
 args = parser.parse_args()
 
 graceful_killer = GracefulKiller()
 verbose = args.verbose
+input_src = 'rgb'
+if args.preview:
+    input_src = 'rgb_laconic'
 anim_player = AnimPlayer(simulate=args.simulate, frame_rate=args.frame_rate, idle_anim_index=7, idle_intro_index=10)
-pose = MovenetDepthai(input_src='rgb', model='thunder')
+pose = MovenetDepthai(input_src=input_src, model='thunder', score_thresh=args.score_threshold, internal_fps=args.internal_fps)
 renderer = None
 if args.preview:
     renderer = MovenetRenderer(pose, output=args.output)

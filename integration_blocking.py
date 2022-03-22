@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import cv2
 from math import atan2, degrees
 import sys
@@ -487,7 +489,7 @@ parser.add_argument("-p", "--preview", help="Enable Video Preview", action="stor
 parser.add_argument("-s", "--simulate", help="Enable Light Simulator", action="store_true", default=False)
 parser.add_argument("-f", "--frame-rate", type=int, help="Animation Frame rate in FPS (default=%(default)i)", default=25)
 parser.add_argument("-i", "--idle-timeout", type=int, help="Idle timeout in seconds (default=%(default)i)", default=30)
-parser.add_argument("-m", "--min-pose-size", type=int, help="Minimum Pose Size (default=%(default)i)", default=300)
+parser.add_argument("-m", "--min-pose-size", type=int, help="Minimum Pose Size (default=%(default)i)", default=200)
 parser.add_argument("-c", "--min-confidence", type=float, help="Minimum Pose Classification Confidence (default=%(default)f)", default=9.8)
 parser.add_argument("-t", "--score_threshold", default=0.2, type=float,
                     help="Confidence score to determine whether a keypoint prediction is reliable (default=%(default)f)")

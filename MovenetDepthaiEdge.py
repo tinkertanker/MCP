@@ -201,7 +201,7 @@ class MovenetDepthai:
         # Define data queues 
         if not self.laconic:
             self.q_video = self.device.getOutputQueue(name="cam_out", maxSize=1, blocking=False)
-        self.q_ctrl = device.getInputQueue(name="camControl")
+        self.q_ctrl = self.device.getInputQueue(name="camControl")
         self.q_processing_out = self.device.getOutputQueue(name="processing_out", maxSize=4, blocking=False)
         # For debugging
         # self.q_manip_out = self.device.getOutputQueue(name="manip_out", maxSize=1, blocking=False)

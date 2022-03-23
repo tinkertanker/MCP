@@ -57,6 +57,10 @@ class AnimPlayer():
             anim = self.anim_controller.getAnim(anim_index)
             anim.resetFrame()
             anim.setActiveState(False)
+
+    def clear(self):
+        self.light_controller.clear()
+        self.light_controller.show()
     
     def _render_frame(self):
         self.light_controller.clear()

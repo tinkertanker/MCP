@@ -605,3 +605,4 @@ while not graceful_killer.kill_now:
 if renderer:
     renderer.exit()
 pose.exit()
+anim_player.clear()

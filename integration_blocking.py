@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import cv2
 from math import atan2, degrees
 import sys
@@ -462,7 +464,9 @@ def recognize_pose(
     pose_classification = pose_classifier(b.keypoints)
 
     # Smooth classification using EMA.
-    pose_classification_filtered = pose_classification_filter(pose_classification)
+    pose_classification_filtered = pose_classification
+    if pose_classification_filter:
+        pose_classification_filtered = pose_classification_filter(pose_classification)
 
     max_sample = 0
     pose = 0
@@ -483,16 +487,26 @@ def recognize_pose(
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--preview", help="Enable Video Preview", action="store_true",default=False)
 parser.add_argument("-s", "--simulate", help="Enable Light Simulator", action="store_true", default=False)
-parser.add_argument("-f", "--frame-rate", type=int, help="Frame rate in FPS", default=25)
-parser.add_argument("-i", "--idle-timeout", type=int, help="Idle timeout in seconds", default=30)
-parser.add_argument("-m", "--min-pose-size", type=int, help="Minimum Pose Size", default=300)
-parser.add_argument("-c", "--min-confidence", type=float, help="Minimum Confidence", default=9.8)
+parser.add_argument("-f", "--frame-rate", type=int, help="Animation Frame rate in FPS (default=%(default)i)", default=25)
+parser.add_argument("-i", "--idle-timeout", type=int, help="Idle timeout in seconds (default=%(default)i)", default=30)
+parser.add_argument("-m", "--min-pose-size", type=int, help="Minimum Pose Size (default=%(default)i)", default=200)
+parser.add_argument("-c", "--min-confidence", type=float, help="Minimum Pose Classification Confidence (default=%(default)f)", default=9.8)
+parser.add_argument("-t", "--score_threshold", default=0.2, type=float,
+                    help="Confidence score to determine whether a keypoint prediction is reliable (default=%(default)f)")
+parser.add_argument("-n", "--enable-smoothing", help="Enable Smoothing", action="store_true", default=False)
+parser.add_argument('-g', '--internal_fps', type=int,
+                    help="Fps of internal color camera. Too high value lower NN fps (default: 12")  
+parser.add_argument("-v", "--verbose", help="Enable Verbose Logging", action="store_true", default=False)
 parser.add_argument("-o", "--output", help="Path to output video file")
 args = parser.parse_args()
 
 graceful_killer = GracefulKiller()
+verbose = args.verbose
+input_src = 'rgb'
+if args.preview:
+    input_src = 'rgb_laconic'
 anim_player = AnimPlayer(simulate=args.simulate, frame_rate=args.frame_rate, idle_anim_index=7, idle_intro_index=10)
-pose = MovenetDepthai(input_src='rgb', model='thunder')
+pose = MovenetDepthai(input_src=input_src, model='thunder', score_thresh=args.score_threshold, internal_fps=args.internal_fps)
 renderer = None
 if args.preview:
     renderer = MovenetRenderer(pose, output=args.output)
@@ -515,9 +529,11 @@ pose_classifier = PoseClassifier(
     top_n_by_max_distance=30,
     top_n_by_mean_distance=10)
 
-pose_classification_filter = EMADictSmoothing(
-    window_size=10,
-    alpha=0.2)
+pose_classification_filter = None
+if args.enable_smoothing:
+    pose_classification_filter = EMADictSmoothing(
+        window_size=10,
+        alpha=0.2)
 
 while not graceful_killer.kill_now:
     # Run blazepose on next frame
@@ -535,9 +551,10 @@ while not graceful_killer.kill_now:
     if (pose_info):
         pose1 = pose_info[0]
         info_set = list(pose.crop_region[1:5]) + pose_info
-        print(info_set)
+        if verbose:
+            print(info_set, flush=True)
         pose_state = info_set[4]
-        if pose1:
+        if pose1 and renderer:
             cv2.putText(frame, pose1, (frame.shape[1] // 2, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 190, 255), 3)        
         
         if (pose_state == "rain_dance"):
@@ -560,7 +577,7 @@ while not graceful_killer.kill_now:
             anim_player.play_once(8)
         elif (pose_state == "rightsuperman"):
             anim_player.play_once(9)
-        elif (pose_state == "leftup"):
+        elif (pose_state == "leftup" or pose_state == "rightup"):
             anim_player.play_once(13)
         else:
             pose_state = "stand"
@@ -588,3 +605,4 @@ while not graceful_killer.kill_now:
 if renderer:
     renderer.exit()
 pose.exit()
+anim_player.clear()

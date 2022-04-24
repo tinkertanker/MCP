@@ -8,19 +8,19 @@ import numpy as np
 
 
 _anims = [  ['./data/testgrid_animData.txt', 51],       # 0. test grid
-            ['./data/y_animData.txt', 51],           # 1. Y-pose
+            ['./data/y_animData.txt', 121],           # 1. Y-pose
             ['./data/tri_animData.txt', 76],         # 2. tri
-            ['./data/crane_animData.txt', 151],       # 3. crane
-            ['./data/leftdab_animData.txt', 51],      # 4. left dab
-            ['./data/rightdab_animData.txt', 51],      # 5. right dab
-            ['./data/squat_animData.txt', 126],       # 6. squat 
+            ['./data/crane_animData.txt', 251],       # 3. crane
+            ['./data/leftdab_animData.txt', 131],      # 4. left dab
+            ['./data/rightdab_animData.txt', 131],      # 5. right dab
+            ['./data/squat_animData.txt', 211],       # 6. squat .
             ['./data/idle_Pink_animData.txt', 76],    # 7. idle pink
-            ['./data/leftsuperman_animData.txt', 151],  # 8. left superman
-            ['./data/rightsuperman_animData.txt', 151],    # 9. right superman
+            ['./data/leftsuperman_animData.txt', 366],  # 8. left superman .
+            ['./data/rightsuperman_animData.txt', 366],    # 9. right superman .
             ['./data/fadein_animData.txt', 26],           # 10. fadein
             ['./data/fadeout_animData.txt', 26],          # 11. fadeout
-            ['./data/raindance_animData.txt', 91],       # 12. raindance
-            ['./data/leftup_animData.txt', 61]            # 13. leftup
+            ['./data/raindance_animData.txt', 215],       # 12. raindance .
+            ['./data/leftup_animData.txt', 166]            # 13. leftup .
         ]
 _totalAnims = len(_anims)
 
@@ -46,9 +46,9 @@ class AnimLoader:
         colorData = np.loadtxt(self.filepath, delimiter=",", dtype="int")
         colorData = colorData.reshape(self.framecount,185,3)  #179
         
-        print("Modified shape = ",colorData.shape)
-        print("data =", colorData[6,2,:])
-        print("data =", colorData[7,2,:])
+        # print("Modified shape = ",colorData.shape)
+        # print("data =", colorData[6,2,:])
+        # print("data =", colorData[7,2,:])
 
         self.colorData = colorData
 

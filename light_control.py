@@ -17,7 +17,7 @@ except:
 
 class Lights:
     # mapping is an array of side, y, x coordinates to LED number
-    mapping = [
+    main_mapping = [
         [ # side 0,
             [ 44, 43, 42, 41, 40, 39, 38, 37, 36 ],
             [ 27, 28, 29, 30, 31, 32, 33, 34, 35 ],
@@ -44,6 +44,41 @@ class Lights:
             [-1,  0, -1,  1, -1,  2, -1, 69, -1, 70, -1],
         ]
     ]
+
+    # alt mapping for tiny mockup
+    alt_mapping = [
+        [ # side 0,
+            [ 44, 43, 42, 41, 40, 39, 38, 37, 36 ],
+            [ 27, 28, 29, 30, 31, 32, 33, 34, 35 ],
+            [ 26, 25, 24, 23, 22, 21, 20, 19, 18 ],
+            [  9, 10, 11, 12, 13, 14, 15, 16, 17 ],
+            [  8,  7,  6,  5,  4,  3,  2,  1,  0 ]
+        ],
+        [ # side 1 (left)
+            [ 54, 55, 56, 57, 58, 59, 60, 61, 62],
+            [ 53, 52, 51, 50, 49, 48, 47, 46, 45],
+            [ 36, 37, 38, 39, 40, 41, 42, 43, 44],
+            [ 35, 34, 33, 32, 31, 30, 29, 28, 27],
+            [ 18, 19, 20, 21, 22, 23, 24, 25, 26],
+            [ 17, 16, 15, 14, 13, 12, 11, 10,  9],
+            [  0,  1,  2,  3,  4,  5,  6,  7,  8]
+        ],
+        [ # side 2 (right)
+            [ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10],
+            [21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11],
+            [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+            [43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33],
+            [44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54],
+            [65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55],
+            [-1, 67, -1, 69, -1, 71, -1, 73, -1, 75, -1],
+        ]
+    ]
+
+    def __init__(self, alt_mapping=False):
+        if alt_mapping:
+            self.mapping = self.alt_mapping
+        else:
+            self.mapping = self.main_mapping
 
     def set_color(self, side, x, y, color=(255,255,255)):
         index = self.mapping[side][y][x]
@@ -156,7 +191,7 @@ class Simulator(Frame):
 
 class LightControl:
 
-    def __init__(self, simulate=True):
+    def __init__(self, simulate=True, alt_mapping=False):
         self.simulate = simulate
         self.sim_frame, self.tk_root = None, None
         self.lights = None
@@ -176,7 +211,7 @@ class LightControl:
                 self.buffer[0][x].append((0,0,0))
 
         if pixels is not None:
-            self.lights = Lights()
+            self.lights = Lights(alt_mapping=alt_mapping)
 
         if simulate:
             self.tk_root = Tk()
@@ -239,7 +274,7 @@ class LightControl:
 
 
 if __name__ == '__main__':
-    lc = LightControl(simulate=True)
+    lc = LightControl(simulate=True, alt_mapping=False)
     lc.rainbow_grid()
     lc.show()
     input('Press Enter to quit')

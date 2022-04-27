@@ -498,6 +498,7 @@ parser.add_argument('-g', '--internal_fps', type=int,
                     help="Fps of internal color camera. Too high value lower NN fps (default: 12")  
 parser.add_argument("-v", "--verbose", help="Enable Verbose Logging", action="store_true", default=False)
 parser.add_argument("-o", "--output", help="Path to output video file")
+parser.add_argument("-a", "--alt-mapping", help="Alt LED Mapping", action="store_true",default=False)
 args = parser.parse_args()
 
 graceful_killer = GracefulKiller()
@@ -505,7 +506,7 @@ verbose = args.verbose
 input_src = 'rgb'
 if args.preview:
     input_src = 'rgb_laconic'
-anim_player = AnimPlayer(simulate=args.simulate, frame_rate=args.frame_rate, idle_anim_index=7, idle_intro_index=10)
+anim_player = AnimPlayer(simulate=args.simulate, frame_rate=args.frame_rate, idle_anim_index=7, idle_intro_index=10, alt_mapping=args.alt_mapping)
 pose = MovenetDepthai(input_src=input_src, model='thunder', score_thresh=args.score_threshold, internal_fps=args.internal_fps)
 renderer = None
 if args.preview:

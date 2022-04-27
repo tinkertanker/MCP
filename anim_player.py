@@ -5,9 +5,9 @@ from anim_control import AnimController
 
 class AnimPlayer():
 
-    def __init__(self, simulate = True, frame_rate = 25, idle_anim_index = 7, idle_intro_index = -1, idle_outro_index = -1):
+    def __init__(self, simulate = True, frame_rate = 25, idle_anim_index = 7, idle_intro_index = -1, idle_outro_index = -1, alt_mapping = False):
         self.frame_period = 1.0/frame_rate
-        self.light_controller = LightControl(simulate = simulate)
+        self.light_controller = LightControl(simulate = simulate, alt_mapping=alt_mapping)
         self.anim_controller = AnimController()
         self.playing_idle = False
         self.idle_anim_index = idle_anim_index

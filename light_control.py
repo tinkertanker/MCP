@@ -11,13 +11,13 @@ pixels = None
 try:
     import board
     import neopixel
-    pixels = neopixel.NeoPixel(board.D18, 180, brightness=1.0, auto_write=False)
+    pixels = neopixel.NeoPixel(board.D18, 185, brightness=1.0, auto_write=False)
 except:
     print("Couldn't initialize physical lights.")
 
 class Lights:
     # mapping is an array of side, y, x coordinates to LED number
-    main_mapping = [
+    mapping_1 = [
         [ # side 0,
             [ 44, 43, 42, 41, 40, 39, 38, 37, 36 ],
             [ 27, 28, 29, 30, 31, 32, 33, 34, 35 ],
@@ -46,7 +46,7 @@ class Lights:
     ]
 
     # alt mapping for tiny mockup
-    alt_mapping = [
+    mapping_2 = [
         [ # side 0,
             [ 44, 43, 42, 41, 40, 39, 38, 37, 36 ],
             [ 27, 28, 29, 30, 31, 32, 33, 34, 35 ],
@@ -75,10 +75,16 @@ class Lights:
     ]
 
     def __init__(self, alt_mapping=False):
+        self.alt_mapping=alt_mapping
+        self.offset = 1
+        self.side_2_offset = 63
+        self.side_0_offset = 63 + 71
+        self.mapping = self.mapping_1
         if alt_mapping:
-            self.mapping = self.alt_mapping
-        else:
-            self.mapping = self.main_mapping
+            self.mapping = self.mapping_2
+            self.offset = 0
+            self.side_0_offset = 63 + 71 + 6
+
 
     def set_color(self, side, x, y, color=(255,255,255)):
         index = self.mapping[side][y][x]

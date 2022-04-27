@@ -90,11 +90,11 @@ class Lights:
         index = self.mapping[side][y][x]
         if index >= 0 and index != -1:
             if(side == 2):
-                index += 63
+                index += self.side_2_offset
             if(side == 0):
-                index += 63 + 71   
+                index += self.side_0_offset
             
-            pixels[index + 1] = tuple(color)
+            pixels[index + self.offset] = tuple(color)
 
     def clear(self):
         pixels.fill((0,0,0))

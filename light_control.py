@@ -230,13 +230,41 @@ class LightControl:
     # 1 - left
     # 2 - right
     def set_color(self, side, x, y, color=(255,255,255)):
-        if self.simulate:
-            self.sim_frame.set_color(side, x, y, color)
-        if self.lights:
-            self.lights.set_color(side, x, y, color)
-        self.buffer[side][x][y] = color
+        # ignore values that are out of range
+        if side >= len(self.buffer) or x >= len(self.buffer[side]) or y >= len(self.buffer[side][y]):
+            return
 
+        r = max(0, min(color[0], 255))
+        g = max(0, min(color[1], 255))
+        b = max(0, min(color[2], 255))
+
+        if self.simulate:
+            self.sim_frame.set_color(side, x, y, (r,g,b))
+        if self.lights:
+            self.lights.set_color(side, x, y, (r,g,b))
+        self.buffer[side][x][y] = (r,g,b)
     
+    def get_color(self, side, x, y):
+        # ignore values that are out of range
+        if side >= len(self.buffer) or x >= len(self.buffer[side]) or y >= len(self.buffer[side][x]):
+            return
+
+        return self.buffer[side][x][y]
+
+    def add_color(self, side, x, y, color=(255,255,255)):
+        # ignore values that are out of range
+        print(f"{side} {x} {y}")
+        if side >= len(self.buffer) or x >= len(self.buffer[side]) or y >= len(self.buffer[side][x]):
+            return
+
+        original_color = self.get_color(side, x, y)
+        new_color_unclipped = (
+            original_color[0] + color[0],
+            original_color[1] + color[1],
+            original_color[2] + color[2],
+        )
+        self.set_color(side, x, y, new_color_unclipped)
+
     def quick_fade(self):
         for i in range(0,16):
             for x in range(0,9):
@@ -258,6 +286,19 @@ class LightControl:
             self.sim_frame.clear()
         if self.lights:
             self.lights.clear()
+
+    def fill_color(self, color):
+        for x in range(0,9):
+            for y in range(0,7):
+                self.set_color(1, x, y, color)
+
+        for x in range(0,11):
+            for y in range(0,7):
+                self.set_color(2, x, y, color)
+
+        for x in range(0,9):
+            for y in range(0,5):
+                self.set_color(0, x, y, color)
 
     def rainbow_grid(self):
         for x in range(0,9):

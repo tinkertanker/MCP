@@ -1,5 +1,6 @@
 from light_control import LightControl
 import colorsys
+import random
 import time
 
 # The HeartBeat animation consists of two animations
@@ -9,7 +10,7 @@ import time
 #   (e.g. every 3 seconds)
 class HeartBeat:
 
-    def __init__(self, lc, background_period=12.0, sequence_period=3.0, wave_speed=400, wait_for_keyboard_input=False):
+    def __init__(self, lc, background_period=12.0, sequence_period=3.0, wave_speed=400, randomize_people_count=False, wait_for_keyboard_input=False):
         self.lc = lc
 
         self.background_period = background_period
@@ -25,6 +26,7 @@ class HeartBeat:
 
         self.number_of_people = 0
         self.previous_number_of_people = 0
+        self.randomize_people_count = randomize_people_count
         self.wait_for_keyboard_input = wait_for_keyboard_input
 
     def _add_pulse(self, invert_r, invert_g, invert_b, complementary_color, side, pulse_start_time, skew=1):
@@ -92,6 +94,9 @@ class HeartBeat:
         # check if we are starting a new sequence, and determine number of waves accordingly
         new_sequence_clock = time.time() % self.sequence_period
         if new_sequence_clock < self.sequence_clock:
+            if self.randomize_people_count:
+                self.number_of_people = random.randint(0,10)
+                print(f"{self.number_of_people} People")
             if self.wait_for_keyboard_input:
                 self.number_of_people = int(input("Number of people: "))
             if self.number_of_people > self.previous_number_of_people:
@@ -108,13 +113,36 @@ class HeartBeat:
 
 if __name__ == '__main__':
 
+    from tkinter import Tk
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-x", "--disable-simulator", help="Disable Light Simulator", action="store_true", default=False)
+    parser.add_argument("-r", "--randomize-people-count", help="Randomize People Count", action="store_true", default=False)
+    parser.add_argument("-k", "--wait-for-keyboard", help="Wait for Keyboard Input", action="store_true", default=False)
+    args = parser.parse_args()
+
+    lc = LightControl(simulate=(not args.disable_simulator))
+
     hb = HeartBeat(
-        LightControl(simulate=True),
+        lc,
         background_period=12.0,
         sequence_period=3.0,
         wave_speed=400,
-        wait_for_keyboard_input=True
+        randomize_people_count=args.randomize_people_count,
+        wait_for_keyboard_input=args.wait_for_keyboard
     )
+
+    def onKeyPress(event):
+        try:
+            people = int(event.char)
+            print(f"{people} people detected")
+            hb.number_of_people = people
+        except:
+            pass
+
+    if (not args.disable_simulator):
+        lc.tk_root.bind('<KeyPress>', onKeyPress)
 
     while True:
         hb.step_frame()

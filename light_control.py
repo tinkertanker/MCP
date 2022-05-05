@@ -253,7 +253,6 @@ class LightControl:
 
     def add_color(self, side, x, y, color=(255,255,255)):
         # ignore values that are out of range
-        print(f"{side} {x} {y}")
         if side >= len(self.buffer) or x >= len(self.buffer[side]) or y >= len(self.buffer[side][x]):
             return
 

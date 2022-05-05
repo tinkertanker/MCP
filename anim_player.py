@@ -80,9 +80,8 @@ if __name__ == '__main__':
 
     anim_player = AnimPlayer(simulate=True, frame_rate=25, idle_anim_index=7, idle_intro_index=10)
     
-    # for x in range(0, 13):
-    #     anim_player.play_once(x)
-    # anim_player.play_once(13)
+    for x in range(0, 13):
+        anim_player.play_once(x)
 
     start_time = time.time()
     while time.time() - start_time < 10:

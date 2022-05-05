@@ -1,5 +1,6 @@
 from light_control import LightControl
 import colorsys
+import math
 import random
 import time
 
@@ -15,19 +16,34 @@ class HeartBeat:
 
         self.background_period = background_period
         self.sequence_period = sequence_period
-        self.wave_speed = wave_speed
-
-        self.left_pulse_delay = 160/wave_speed
-        self.right_pulse_delay = 100/wave_speed
-        self.wave_delay = 260/wave_speed
 
         self.sequence_clock = time.time() % self.sequence_period
-        self.waves_to_show = 3
+        self.waves_to_show = 1
 
         self.number_of_people = 0
         self.previous_number_of_people = 0
         self.randomize_people_count = randomize_people_count
         self.wait_for_keyboard_input = wait_for_keyboard_input
+
+        self.background_color = (0, 0, 0)
+        self.complementary_color = (0, 0, 0)
+
+        self._set_wave_speed(wave_speed)
+    
+    def _set_wave_speed(self, wave_speed):
+        self.wave_speed = wave_speed
+        self.left_pulse_delay = 100/wave_speed
+        self.right_pulse_delay = -20/wave_speed
+
+        # Determine sequence period from speed
+        # self.sequence_period = math.ceil(400/wave_speed)
+        # self.waves_to_show = int(wave_speed * self.sequence_period / 400)
+
+        # Determine waves to show from speed
+        self.waves_to_show = int(self.wave_speed / 100)
+
+        self.wave_delay = self.sequence_period / self.waves_to_show
+        print(f"{self.number_of_people} people and {self.waves_to_show} waves in {self.sequence_period} seconds")
 
     def _add_pulse(self, invert_r, invert_g, invert_b, complementary_color, side, pulse_start_time, skew=1):
         pulse_clock = self.sequence_clock - pulse_start_time
@@ -42,21 +58,28 @@ class HeartBeat:
                 if side == 0:
                     y2 = 5 - y
                 elif side == 1:
-                    x2 = 8 - x
                     y2 = 5 + 8 - y
                 elif side == 2:
+                    x2 = 12 - x
                     y2 = 5 + 10 - y
 
                 # use this to "draw" circle using formula x^2 + y^2 = r
                 # where we later compare the calculated distance(squared) with the desired radius
-                distance = abs((x2**2 + (skew*y2)**2) - frame_clock)
+                distancesq = abs((x2**2 + (skew*y2)**2) - frame_clock)
 
                 # adjust color of pixel within a thickness "band" from the circle
                 # and vary depending on distance from center of band
-                adjustment = 255-min(255, int(distance*8.5))
-                if distance < 30:
+                if distancesq < 50:
+                    distance = distancesq**0.5
+                    adjustment = 255-min(255, int(distance*3.2))
+                    white_contribution = (7 - distance) * (255.0 / 7)
+                    color_contribution_factor = (distance / 7)
+                    self.lc.add_color(side, x, y,
+                        (int(white_contribution + self.background_color[0] * color_contribution_factor),
+                        int(white_contribution + self.background_color[1] * color_contribution_factor),
+                        int(white_contribution + self.background_color[2] * color_contribution_factor)))
                     #self.lc.add_color(side, x, y, (invert_r * adjustment, invert_g * adjustment, invert_b * adjustment))
-                    self.lc.set_color(side, x, y, complementary_color)
+                    #self.lc.set_color(side, x, y, complementary_color)
 
     def _add_wave(self, invert_r, invert_g, invert_b, complementary_color, wave_start_time):
         self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 0, wave_start_time, skew=1.36)
@@ -66,12 +89,13 @@ class HeartBeat:
 
     def step_frame(self):
         # vary background color varies with global time
-        hue = (time.time()%self.background_period)/self.background_period
-        color = colorsys.hsv_to_rgb(hue, 0.6, 1.0)
+        hue = (200 + abs(((time.time()%self.background_period)/self.background_period) * 190 - 95)) / 360
+        color = colorsys.hsv_to_rgb(hue, 0.7, 1.0)
         r = int(color[0] * 255.0)
         g = int(color[1] * 255.0)
         b = int(color[2] * 255.0)
         self.lc.fill_color((r, g, b))
+        self.background_color = (r, g, b)
 
         complementary_hue = hue + 0.5 if hue < 0.5 else hue - 0.5
         complementary_color = colorsys.hsv_to_rgb(complementary_hue, 0.6, 1.0)
@@ -94,15 +118,14 @@ class HeartBeat:
         # check if we are starting a new sequence, and determine number of waves accordingly
         new_sequence_clock = time.time() % self.sequence_period
         if new_sequence_clock < self.sequence_clock:
+            # get number of people from various simulated means
             if self.randomize_people_count:
                 self.number_of_people = random.randint(0,10)
                 print(f"{self.number_of_people} People")
             if self.wait_for_keyboard_input:
                 self.number_of_people = int(input("Number of people: "))
-            if self.number_of_people > self.previous_number_of_people:
-                self.waves_to_show = 3
-            else:
-                self.waves_to_show = max(0, self.waves_to_show - 1)
+            # set speed based on number of people
+            self._set_wave_speed(100 + 50 * min(5, self.number_of_people))
             self.previous_number_of_people = self.number_of_people
         self.sequence_clock = new_sequence_clock
 
@@ -127,8 +150,8 @@ if __name__ == '__main__':
     hb = HeartBeat(
         lc,
         background_period=12.0,
-        sequence_period=3.0,
-        wave_speed=400,
+        sequence_period=4.0,
+        wave_speed=100,
         randomize_people_count=args.randomize_people_count,
         wait_for_keyboard_input=args.wait_for_keyboard
     )

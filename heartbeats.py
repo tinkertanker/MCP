@@ -143,9 +143,10 @@ if __name__ == '__main__':
     parser.add_argument("-x", "--disable-simulator", help="Disable Light Simulator", action="store_true", default=False)
     parser.add_argument("-r", "--randomize-people-count", help="Randomize People Count", action="store_true", default=False)
     parser.add_argument("-k", "--wait-for-keyboard", help="Wait for Keyboard Input", action="store_true", default=False)
+    parser.add_argument("-a", "--alt-mapping", help="Alt LED Mapping", action="store_true",default=False)
     args = parser.parse_args()
 
-    lc = LightControl(simulate=(not args.disable_simulator))
+    lc = LightControl(simulate=(not args.disable_simulator), alt_mapping=args.alt_mapping)
 
     hb = HeartBeat(
         lc,

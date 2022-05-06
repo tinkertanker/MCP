@@ -32,9 +32,9 @@ class HeartBeat:
     
     def _set_wave_speed(self, wave_speed):
         self.wave_speed = wave_speed
-        self.main_pulse_delay = 40/wave_speed
+        self.main_pulse_delay = 0/wave_speed
         self.left_pulse_delay = 140/wave_speed
-        self.right_pulse_delay = 20/wave_speed
+        self.right_pulse_delay = 40/wave_speed
 
         # Determine sequence period from speed
         # self.sequence_period = math.ceil(400/wave_speed)

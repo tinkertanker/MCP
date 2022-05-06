@@ -32,8 +32,9 @@ class HeartBeat:
     
     def _set_wave_speed(self, wave_speed):
         self.wave_speed = wave_speed
-        self.left_pulse_delay = 100/wave_speed
-        self.right_pulse_delay = -20/wave_speed
+        self.main_pulse_delay = 40/wave_speed
+        self.left_pulse_delay = 140/wave_speed
+        self.right_pulse_delay = 20/wave_speed
 
         # Determine sequence period from speed
         # self.sequence_period = math.ceil(400/wave_speed)
@@ -69,20 +70,26 @@ class HeartBeat:
 
                 # adjust color of pixel within a thickness "band" from the circle
                 # and vary depending on distance from center of band
-                if distancesq < 50:
+                thresholdsq = 60
+                if distancesq < thresholdsq:
                     distance = distancesq**0.5
+                    threshold = thresholdsq**0.5
                     adjustment = 255-min(255, int(distance*3.2))
-                    white_contribution = (7 - distance) * (255.0 / 7)
-                    color_contribution_factor = (distance / 7)
-                    self.lc.add_color(side, x, y,
-                        (int(white_contribution + self.background_color[0] * color_contribution_factor),
-                        int(white_contribution + self.background_color[1] * color_contribution_factor),
-                        int(white_contribution + self.background_color[2] * color_contribution_factor)))
+                    destination_color = complementary_color
+                    destination_color_factor = 1
+                    if distancesq > thresholdsq / 3:
+                        # fade near the edges
+                        destination_color_factor = (thresholdsq - distancesq) / thresholdsq
+                    current_color_factor = 1 - destination_color_factor
+                    self.lc.set_color(side, x, y,
+                        (int(destination_color[0] * destination_color_factor + self.background_color[0] * current_color_factor),
+                        int(destination_color[1] * destination_color_factor + self.background_color[1] * current_color_factor),
+                        int(destination_color[2] * destination_color_factor + self.background_color[2] * current_color_factor)))
                     #self.lc.add_color(side, x, y, (invert_r * adjustment, invert_g * adjustment, invert_b * adjustment))
                     #self.lc.set_color(side, x, y, complementary_color)
 
     def _add_wave(self, invert_r, invert_g, invert_b, complementary_color, wave_start_time):
-        self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 0, wave_start_time, skew=1.36)
+        self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 0, wave_start_time + self.main_pulse_delay, skew=1.36)
         self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 1, wave_start_time + self.left_pulse_delay, skew=1)
         self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 2, wave_start_time + self.right_pulse_delay, skew=1)
 
@@ -125,7 +132,8 @@ class HeartBeat:
             if self.wait_for_keyboard_input:
                 self.number_of_people = int(input("Number of people: "))
             # set speed based on number of people
-            self._set_wave_speed(100 + 50 * min(5, self.number_of_people))
+            #self._set_wave_speed(100 + 50 * min(5, self.number_of_people))
+            self._set_wave_speed(100 * min(5, int(self.number_of_people/2)+1))
             self.previous_number_of_people = self.number_of_people
         self.sequence_clock = new_sequence_clock
 

@@ -97,7 +97,7 @@ class HeartBeat:
     def step_frame(self):
         # vary background color varies with global time
         hue = (200 + abs(((time.time()%self.background_period)/self.background_period) * 190 - 95)) / 360
-        color = colorsys.hsv_to_rgb(hue, 0.7, 1.0)
+        color = colorsys.hsv_to_rgb(hue, 1.0, 0.5)
         r = int(color[0] * 255.0)
         g = int(color[1] * 255.0)
         b = int(color[2] * 255.0)
@@ -105,7 +105,7 @@ class HeartBeat:
         self.background_color = (r, g, b)
 
         complementary_hue = hue + 0.5 if hue < 0.5 else hue - 0.5
-        complementary_color = colorsys.hsv_to_rgb(complementary_hue, 0.6, 1.0)
+        complementary_color = colorsys.hsv_to_rgb(complementary_hue, 1.0, 1.0)
         complementary_color = (
             int(complementary_color[0] * 255),
             int(complementary_color[1] * 255),

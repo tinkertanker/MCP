@@ -70,7 +70,7 @@ class HeartBeat:
 
                 # adjust color of pixel within a thickness "band" from the circle
                 # and vary depending on distance from center of band
-                thresholdsq = 60
+                thresholdsq = 20
                 if distancesq < thresholdsq:
                     distance = distancesq**0.5
                     threshold = thresholdsq**0.5
@@ -90,8 +90,8 @@ class HeartBeat:
 
     def _add_wave(self, invert_r, invert_g, invert_b, complementary_color, wave_start_time):
         self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 0, wave_start_time + self.main_pulse_delay, skew=1.36)
-        self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 1, wave_start_time + self.left_pulse_delay, skew=1)
-        self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 2, wave_start_time + self.right_pulse_delay, skew=1)
+        self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 1, wave_start_time + self.left_pulse_delay, skew=0.6)
+        self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 2, wave_start_time + self.right_pulse_delay, skew=0.6)
 
 
     def step_frame(self):

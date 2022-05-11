@@ -33,7 +33,7 @@ class HeartBeat:
     def _set_wave_speed(self, wave_speed):
         self.wave_speed = wave_speed
         self.main_pulse_delay = 0/wave_speed
-        self.left_pulse_delay = 140/wave_speed
+        self.left_pulse_delay = 100/wave_speed
         self.right_pulse_delay = 40/wave_speed
 
         # Determine sequence period from speed
@@ -104,7 +104,7 @@ class HeartBeat:
         self.lc.fill_color((r, g, b))
         self.background_color = (r, g, b)
 
-        complementary_hue = hue + 0.5 if hue < 0.5 else hue - 0.5
+        complementary_hue = (hue + 0.75) % 1
         complementary_color = colorsys.hsv_to_rgb(complementary_hue, 1.0, 1.0)
         complementary_color = (
             int(complementary_color[0] * 255),

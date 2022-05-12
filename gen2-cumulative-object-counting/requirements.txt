@@ -1,5 +1,9 @@
+cmake
 numpy>=1.21
-opencv_python==4.5.1.48
+dlib
+blobconverter==1.2.9
+opencv-python==4.5.1.48
 depthai==2.15.2.0
 scipy==1.4.1
-blobconverter==1.2.9
+
+

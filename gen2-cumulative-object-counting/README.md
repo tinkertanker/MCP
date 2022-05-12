@@ -5,7 +5,9 @@
 ## Installation
 
 ```
+python3 -m pip uninstall opencv-python -y
 python3 -m pip install -r requirements.txt
+python3 -m pip download --no-binary=:all: --no-use-pep517 scipy==1.4.1
 ```
 
 ## Usage

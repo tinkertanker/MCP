@@ -55,7 +55,7 @@ nnSource = "host" if IMAGE else "color"
 pm = PipelineManager()
 if not IMAGE:
     pm.createColorCam(previewSize=size, xout=True)
-    pv = PreviewManager(display=["color"], nnSource=nnSource)
+    #pv = PreviewManager(display=["color"], nnSource=nnSource)
 
 nm = NNetManager(inputSize=size, nnFamily="mobilenet", labels=labelMap, confidence=0.5)
 nn = nm.createNN(pm.pipeline, pm.nodes, blobPath=nnPath, source=nnSource)
@@ -238,18 +238,20 @@ with dai.Device(pm.pipeline) as device:
         imgPaths = [args.image] if args.image else list(parentDir.glob('images/*.jpeg'))
         og_frames = itertools.cycle([cropToAspectRatio(cv2.imread(str(imgPath)), size) for imgPath in imgPaths])
     else:
-        pv.createQueues(device)
+        #pv.createQueues(device)
+        pass
 
     while True:
         if IMAGE:
             frame = next(og_frames).copy()
             nm.sendInputFrame(frame)
         else:
-            pv.prepareFrames(blocking=True)
-            frame = pv.get("color")
+            #pv.prepareFrames(blocking=True)
+            #frame = pv.get("color")
+            pass
 
         nn_data = nm.decode(nm.outputQueue.get())
-        nm.draw(frame, nn_data)
+        #nm.draw(frame, nn_data)
         hb.number_of_people = len(nn_data)
         hb.step_frame()
         #cv2.putText(frame, f"People count: {len(nn_data)}", (5, 30), cv2.FONT_HERSHEY_TRIPLEX, 1, (0,0,255))

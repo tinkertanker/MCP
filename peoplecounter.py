@@ -255,5 +255,5 @@ with dai.Device(pm.pipeline) as device:
         #cv2.putText(frame, f"People count: {len(nn_data)}", (5, 30), cv2.FONT_HERSHEY_TRIPLEX, 1, (0,0,255))
         #cv2.imshow("color", frame)
 
-        if cv2.waitKey(3000 if IMAGE else 1) == ord('q'):
-            break
+        #if cv2.waitKey(3000 if IMAGE else 1) == ord('q'):
+        #    break

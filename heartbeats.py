@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from light_control import LightControl
 import colorsys
 import math

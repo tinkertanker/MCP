@@ -1,6 +1,7 @@
 from light_control import LightControl
 import colorsys
 import math
+import os
 import random
 import time
 
@@ -11,7 +12,7 @@ import time
 #   (e.g. every 3 seconds)
 class HeartBeat:
 
-    def __init__(self, lc, background_period=12.0, sequence_period=3.0, wave_speed=400, randomize_people_count=False, wait_for_keyboard_input=False):
+    def __init__(self, lc, background_period=12.0, sequence_period=3.0, wave_speed=400, randomize_people_count=False, wait_for_keyboard_input=False, peoplenum_filename='/dev/shm/millenia.txt'):
         self.lc = lc
 
         self.background_period = background_period
@@ -27,6 +28,7 @@ class HeartBeat:
 
         self.background_color = (0, 0, 0)
         self.complementary_color = (0, 0, 0)
+        self.peoplenum_filename = peoplenum_filename
 
         self._set_wave_speed(wave_speed)
     
@@ -93,6 +95,17 @@ class HeartBeat:
         self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 1, wave_start_time + self.left_pulse_delay, skew=0.6)
         self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 2, wave_start_time + self.right_pulse_delay, skew=0.6)
 
+    def _read_peoplenum_from_file(self):
+        if os.path.exists(self.peoplenum_filename):
+            try:
+                with open(self.peoplenum_filename) as f:
+                    peoplenum = int(f.readline())
+                    print(f'read peoplenum of {peoplenum} from file')
+                    self.number_of_people = peoplenum
+            except:
+                pass
+            os.remove(self.peoplenum_filename)
+
 
     def step_frame(self):
         # vary background color varies with global time
@@ -129,8 +142,10 @@ class HeartBeat:
             if self.randomize_people_count:
                 self.number_of_people = random.randint(0,10)
                 print(f"{self.number_of_people} People")
-            if self.wait_for_keyboard_input:
+            elif self.wait_for_keyboard_input:
                 self.number_of_people = int(input("Number of people: "))
+            else:
+                self._read_peoplenum_from_file()
             # set speed based on number of people
             #self._set_wave_speed(100 + 50 * min(5, self.number_of_people))
             self._set_wave_speed(100 * min(5, int(self.number_of_people/2)+1))
@@ -152,6 +167,9 @@ if __name__ == '__main__':
     parser.add_argument("-r", "--randomize-people-count", help="Randomize People Count", action="store_true", default=False)
     parser.add_argument("-k", "--wait-for-keyboard", help="Wait for Keyboard Input", action="store_true", default=False)
     parser.add_argument("-a", "--alt-mapping", help="Alt LED Mapping", action="store_true",default=False)
+    parser.add_argument('-f', '--peoplenum-filename', type=str,
+                        help="Alternative path from which to read the number of people",
+                        default='/dev/shm/millenia.txt')
     args = parser.parse_args()
 
     lc = LightControl(simulate=args.enable_simulator, alt_mapping=args.alt_mapping)
@@ -162,7 +180,8 @@ if __name__ == '__main__':
         sequence_period=4.0,
         wave_speed=100,
         randomize_people_count=args.randomize_people_count,
-        wait_for_keyboard_input=args.wait_for_keyboard
+        wait_for_keyboard_input=args.wait_for_keyboard,
+        peoplenum_filename=args.peoplenum_filename
     )
 
     def onKeyPress(event):
@@ -173,7 +192,7 @@ if __name__ == '__main__':
         except:
             pass
 
-    if (not args.disable_simulator):
+    if (args.enable_simulator):
         lc.tk_root.bind('<KeyPress>', onKeyPress)
 
     while True:

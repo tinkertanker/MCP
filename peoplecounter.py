@@ -12,11 +12,21 @@ import itertools
 import colorsys
 import math
 import random
+import signal
 import time
 
 
 from depthai_sdk import PipelineManager, NNetManager, PreviewManager
 from depthai_sdk import cropToAspectRatio
+
+class GracefulKiller:
+    kill_now = False
+    def __init__(self):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+    def exit_gracefully(self, *args):
+        self.kill_now = True
 
 parentDir = Path(__file__).parent
 
@@ -42,6 +52,7 @@ parser.add_argument('-f', '--peoplenum-filename', type=str,
                     default='/dev/shm/millenia.txt')
 
 args = parser.parse_args()
+graceful_killer = GracefulKiller()
 
 # Whether we want to use images from host or rgb camera
 IMAGE = not args.camera
@@ -70,11 +81,14 @@ with dai.Device(pm.pipeline) as device:
         pv.createQueues(device)
         pass
 
-    while True:
-        nn_data = nm.decode(nm.outputQueue.get())
+    while not graceful_killer.kill_now:
         try:
+            nn_data = nm.decode(nm.outputQueue.get())
             with open(args.peoplenum_filename, 'w') as f:
                 f.write(str(len(nn_data)))
+                print(f'{len(nn_data)} people detected')
+        except KeyboardInterrupt:
+            break
         except:
             pass
         #nm.draw(frame, nn_data)

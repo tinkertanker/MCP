@@ -3,7 +3,17 @@ import colorsys
 import math
 import os
 import random
+import signal
 import time
+
+class GracefulKiller:
+  kill_now = False
+  def __init__(self):
+    signal.signal(signal.SIGINT, self.exit_gracefully)
+    signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+  def exit_gracefully(self, *args):
+    self.kill_now = True
 
 # The HeartBeat animation consists of two animations
 # - a slower animation that makes the background color cycle through the color wheel
@@ -171,6 +181,7 @@ if __name__ == '__main__':
                         help="Alternative path from which to read the number of people",
                         default='/dev/shm/millenia.txt')
     args = parser.parse_args()
+    graceful_killer = GracefulKiller()
 
     lc = LightControl(simulate=args.enable_simulator, alt_mapping=args.alt_mapping)
 
@@ -195,6 +206,8 @@ if __name__ == '__main__':
     if (args.enable_simulator):
         lc.tk_root.bind('<KeyPress>', onKeyPress)
 
-    while True:
+    while not graceful_killer.kill_now:
         hb.step_frame()
         time.sleep(0.1)
+
+    lc.clear()

@@ -73,9 +73,9 @@ class HeartBeat:
                 if side == 0:
                     y2 = 5 - y
                 elif side == 1:
+                    x2 = 8 - x
                     y2 = 5 + 8 - y
                 elif side == 2:
-                    x2 = 12 - x
                     y2 = 5 + 10 - y
 
                 # use this to "draw" circle using formula x^2 + y^2 = r

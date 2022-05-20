@@ -24,7 +24,7 @@ class GracefulKiller:
 #   (e.g. every 3 seconds)
 class HeartBeat:
 
-    def __init__(self, lc, background_period=12.0, sequence_period=3.0, wave_speed=400, randomize_people_count=False, wait_for_keyboard_input=False, peoplenum_filename='/dev/shm/millenia.txt'):
+    def __init__(self, lc, background_period=12.0, sequence_period=6.0, wave_speed=400, randomize_people_count=False, wait_for_keyboard_input=False, peoplenum_filename='/dev/shm/millenia.txt'):
         self.lc = lc
 
         self.background_period = background_period
@@ -55,7 +55,7 @@ class HeartBeat:
         # self.waves_to_show = int(wave_speed * self.sequence_period / 400)
 
         # Determine waves to show from speed
-        self.waves_to_show = int(self.wave_speed / 100)
+        self.waves_to_show = int(self.wave_speed / 70)
 
         self.wave_delay = self.sequence_period / self.waves_to_show
         print(f"{self.number_of_people} people and {self.waves_to_show} waves in {self.sequence_period} seconds")
@@ -84,14 +84,15 @@ class HeartBeat:
 
                 # adjust color of pixel within a thickness "band" from the circle
                 # and vary depending on distance from center of band
-                thresholdsq = 20
+                thresholdsq = 40
                 if distancesq < thresholdsq:
                     distance = distancesq**0.5
                     threshold = thresholdsq**0.5
                     adjustment = 255-min(255, int(distance*3.2))
-                    destination_color = complementary_color
+                    destination_color = (255,255,255)
+                    #destination_color = complementary_color
                     destination_color_factor = 1
-                    if distancesq > thresholdsq / 3:
+                    if distancesq > 0: #thresholdsq / 4:
                         # fade near the edges
                         destination_color_factor = (thresholdsq - distancesq) / thresholdsq
                     current_color_factor = 1 - destination_color_factor
@@ -122,7 +123,7 @@ class HeartBeat:
     def step_frame(self):
         # vary background color varies with global time
         hue = (200 + abs(((time.time()%self.background_period)/self.background_period) * 190 - 95)) / 360
-        color = colorsys.hsv_to_rgb(hue, 1.0, 0.5)
+        color = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
         r = int(color[0] * 255.0)
         g = int(color[1] * 255.0)
         b = int(color[2] * 255.0)
@@ -160,7 +161,7 @@ class HeartBeat:
                 self._read_peoplenum_from_file()
             # set speed based on number of people
             #self._set_wave_speed(100 + 50 * min(5, self.number_of_people))
-            self._set_wave_speed(100 * min(5, int(self.number_of_people/2)+1))
+            self._set_wave_speed(70 * min(5, int(self.number_of_people/2)+1))
             self.previous_number_of_people = self.number_of_people
         self.sequence_clock = new_sequence_clock
 
@@ -190,7 +191,7 @@ if __name__ == '__main__':
     hb = HeartBeat(
         lc,
         background_period=12.0,
-        sequence_period=4.0,
+        sequence_period=6.0,
         wave_speed=100,
         randomize_people_count=args.randomize_people_count,
         wait_for_keyboard_input=args.wait_for_keyboard,

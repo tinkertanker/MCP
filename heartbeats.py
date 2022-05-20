@@ -84,7 +84,11 @@ class HeartBeat:
 
                 # adjust color of pixel within a thickness "band" from the circle
                 # and vary depending on distance from center of band
-                thresholdsq = 40
+                thresholdsq = 60
+                if self.number_of_people > 2:
+                    thresholdsq = 20
+                elif self.number_of_people > 0:
+                    thresholdsq = 40
                 if distancesq < thresholdsq:
                     distance = distancesq**0.5
                     threshold = thresholdsq**0.5
@@ -92,7 +96,12 @@ class HeartBeat:
                     destination_color = (255,255,255)
                     #destination_color = complementary_color
                     destination_color_factor = 1
-                    if distancesq > 0: #thresholdsq / 4:
+                    fadesqwidth = 0
+                    if self.number_of_people > 2:
+                        fadesqwidth = 20
+                    elif self.number_of_people > 0:
+                        fadesqwidth = 20
+                    if distancesq > fadesqwidth:
                         # fade near the edges
                         destination_color_factor = (thresholdsq - distancesq) / thresholdsq
                     current_color_factor = 1 - destination_color_factor
@@ -122,8 +131,8 @@ class HeartBeat:
 
     def step_frame(self):
         # vary background color varies with global time
-        hue = (200 + abs(((time.time()%self.background_period)/self.background_period) * 190 - 95)) / 360
-        color = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+        hue = (0 + abs(((time.time()%self.background_period)/self.background_period) * 720 - 360)) / 360
+        color = colorsys.hsv_to_rgb(hue, 0.8, 1.0)
         r = int(color[0] * 255.0)
         g = int(color[1] * 255.0)
         b = int(color[2] * 255.0)
@@ -197,7 +206,7 @@ if __name__ == '__main__':
 
     hb = HeartBeat(
         lc,
-        background_period=12.0,
+        background_period=30.0,
         sequence_period=6.0,
         wave_speed=100,
         randomize_people_count=args.randomize_people_count,

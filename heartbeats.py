@@ -59,6 +59,7 @@ class HeartBeat:
 
         self.wave_delay = self.sequence_period / self.waves_to_show
         print(f"{self.number_of_people} people and {self.waves_to_show} waves in {self.sequence_period} seconds")
+        print(f"Current background color: {self.background_color}")
 
     def _add_pulse(self, invert_r, invert_g, invert_b, complementary_color, side, pulse_start_time, skew=1):
         pulse_clock = self.sequence_clock - pulse_start_time
@@ -86,9 +87,9 @@ class HeartBeat:
                 # and vary depending on distance from center of band
                 thresholdsq = 60
                 if self.number_of_people > 2:
-                    thresholdsq = 20
+                    thresholdsq = 80
                 elif self.number_of_people > 0:
-                    thresholdsq = 40
+                    thresholdsq = 60
                 if distancesq < thresholdsq:
                     distance = distancesq**0.5
                     threshold = thresholdsq**0.5
@@ -98,9 +99,9 @@ class HeartBeat:
                     destination_color_factor = 1
                     fadesqwidth = 0
                     if self.number_of_people > 2:
-                        fadesqwidth = 20
+                        fadesqwidth = 0
                     elif self.number_of_people > 0:
-                        fadesqwidth = 20
+                        fadesqwidth = 0
                     if distancesq > fadesqwidth:
                         # fade near the edges
                         destination_color_factor = (thresholdsq - distancesq) / thresholdsq
@@ -171,7 +172,9 @@ class HeartBeat:
             # set speed based on number of people
             #self._set_wave_speed(100 + 50 * min(5, self.number_of_people))
             #self._set_wave_speed(70 * min(5, int(self.number_of_people/2)+1))
-            if self.number_of_people > 2:
+            if self.number_of_people > 4:
+                self._set_wave_speed(280)
+            elif self.number_of_people > 2:
                 self._set_wave_speed(210)
             elif self.number_of_people > 0:
                 self._set_wave_speed(140)
@@ -206,7 +209,7 @@ if __name__ == '__main__':
 
     hb = HeartBeat(
         lc,
-        background_period=30.0,
+        background_period=120.0,
         sequence_period=6.0,
         wave_speed=100,
         randomize_people_count=args.randomize_people_count,

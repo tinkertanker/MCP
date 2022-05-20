@@ -94,7 +94,7 @@ class HeartBeat:
                     distance = distancesq**0.5
                     threshold = thresholdsq**0.5
                     adjustment = 255-min(255, int(distance*3.2))
-                    destination_color = (255,255,255)
+                    destination_color = (0,255,0)
                     #destination_color = complementary_color
                     destination_color_factor = 1
                     fadesqwidth = 0

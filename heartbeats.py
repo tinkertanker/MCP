@@ -161,7 +161,14 @@ class HeartBeat:
                 self._read_peoplenum_from_file()
             # set speed based on number of people
             #self._set_wave_speed(100 + 50 * min(5, self.number_of_people))
-            self._set_wave_speed(70 * min(5, int(self.number_of_people/2)+1))
+            #self._set_wave_speed(70 * min(5, int(self.number_of_people/2)+1))
+            if self.number_of_people > 2:
+                self._set_wave_speed(210)
+            elif self.number_of_people > 0:
+                self._set_wave_speed(140)
+            else:
+                self._set_wave_speed(70)
+
             self.previous_number_of_people = self.number_of_people
         self.sequence_clock = new_sequence_clock
 

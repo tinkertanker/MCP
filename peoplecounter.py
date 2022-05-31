@@ -13,7 +13,10 @@ import colorsys
 import math
 import random
 import signal
+import socket
 import time
+import urllib.request
+import urllib.parse
 
 
 from depthai_sdk import PipelineManager, NNetManager, PreviewManager
@@ -50,9 +53,13 @@ parser.add_argument('-cam', '--camera', action="store_true",
 parser.add_argument('-f', '--peoplenum-filename', type=str,
                     help="Alternative path at which to write the number of people",
                     default='/dev/shm/millenia.txt')
+parser.add_argument('-n', '--sync-server', type=str,
+                    help="Alternative root url from which to read the number of people",
+                    default='http://192.168.1.104:8000')
 
 args = parser.parse_args()
 graceful_killer = GracefulKiller()
+hostname = socket.gethostname()
 
 # Whether we want to use images from host or rgb camera
 IMAGE = not args.camera
@@ -87,6 +94,10 @@ with dai.Device(pm.pipeline) as device:
             with open(args.peoplenum_filename, 'w') as f:
                 f.write(str(len(nn_data)))
                 print(f'{len(nn_data)} people detected')
+            data = urllib.parse.urlencode({'hostname':hostname, 'people': len(nn_data)})
+            data = data.encode('ascii')
+            with urllib.request.urlopen(f'{args.sync_server}/people', data) as f:
+                print(f.read().decode('utf-8'))
         except KeyboardInterrupt:
             break
         except:

@@ -7,6 +7,7 @@ import os
 import random
 import signal
 import time
+import urllib.request
 
 class GracefulKiller:
   kill_now = False
@@ -24,7 +25,7 @@ class GracefulKiller:
 #   (e.g. every 3 seconds)
 class HeartBeat:
 
-    def __init__(self, lc, background_period=12.0, sequence_period=6.0, wave_speed=400, randomize_people_count=False, wait_for_keyboard_input=False, peoplenum_filename='/dev/shm/millenia.txt'):
+    def __init__(self, lc, background_period=12.0, sequence_period=6.0, wave_speed=400, randomize_people_count=False, wait_for_keyboard_input=False, peoplenum_filename='/dev/shm/millenia.txt', sync_server=None):
         self.lc = lc
 
         self.background_period = background_period
@@ -41,6 +42,7 @@ class HeartBeat:
         self.background_color = (0, 0, 0)
         self.complementary_color = (0, 0, 0)
         self.peoplenum_filename = peoplenum_filename
+        self.sync_server = sync_server
 
         self._set_wave_speed(wave_speed)
     
@@ -118,17 +120,22 @@ class HeartBeat:
         self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 1, wave_start_time + self.left_pulse_delay, skew=0.6)
         self._add_pulse(invert_r, invert_g, invert_b, complementary_color, 2, wave_start_time + self.right_pulse_delay, skew=0.6)
 
-    def _read_peoplenum_from_file(self):
-        if os.path.exists(self.peoplenum_filename):
-            try:
-                with open(self.peoplenum_filename) as f:
-                    peoplenum = int(f.readline())
-                    print(f'read peoplenum of {peoplenum} from file')
-                    self.number_of_people = peoplenum
-            except:
-                pass
-            os.remove(self.peoplenum_filename)
-
+    def _read_peoplenum_from_web_or_file(self):
+        try:
+            with urllib.request.urlopen(f'{self.sync_server}/people', timeout=1) as f:
+                peoplenum = int(f.read().decode('utf-8'))
+                print(f'read peoplenum of {peoplenum} from sync server')
+                self.number_of_people = peoplenum
+        except:
+            print("Could not read from sync server")
+            if os.path.exists(self.peoplenum_filename):
+                try:
+                    with open(self.peoplenum_filename) as f:
+                        peoplenum = int(f.readline())
+                        print(f'read peoplenum of {peoplenum} from file')
+                        self.number_of_people = peoplenum
+                except:
+                    pass
 
     def step_frame(self):
         # vary background color varies with global time
@@ -168,7 +175,7 @@ class HeartBeat:
             elif self.wait_for_keyboard_input:
                 self.number_of_people = int(input("Number of people: "))
             else:
-                self._read_peoplenum_from_file()
+                self._read_peoplenum_from_web_or_file()
             # set speed based on number of people
             #self._set_wave_speed(100 + 50 * min(5, self.number_of_people))
             #self._set_wave_speed(70 * min(5, int(self.number_of_people/2)+1))
@@ -202,6 +209,9 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--peoplenum-filename', type=str,
                         help="Alternative path from which to read the number of people",
                         default='/dev/shm/millenia.txt')
+    parser.add_argument('-n', '--sync-server', type=str,
+                        help="Alternative root url from which to read the number of people",
+                        default='http://192.168.1.104:8000')
     args = parser.parse_args()
     graceful_killer = GracefulKiller()
 
@@ -214,7 +224,8 @@ if __name__ == '__main__':
         wave_speed=100,
         randomize_people_count=args.randomize_people_count,
         wait_for_keyboard_input=args.wait_for_keyboard,
-        peoplenum_filename=args.peoplenum_filename
+        peoplenum_filename=args.peoplenum_filename,
+        sync_server=args.sync_server
     )
 
     def onKeyPress(event):

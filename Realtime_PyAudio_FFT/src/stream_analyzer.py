@@ -90,11 +90,43 @@ class Stream_Analyzer:
         self.frequency_bin_energies = np.zeros(self.n_frequency_bins)
         self.frequency_bin_centres  = np.zeros(self.n_frequency_bins)
         self.fftx_indices_per_bin   = []
-        for bin_index in range(self.n_frequency_bins):
-            bin_frequency_indices = np.where(self.fftx_bin_indices == bin_index)
-            self.fftx_indices_per_bin.append(bin_frequency_indices)
-            fftx_frequencies_this_bin = self.fftx[bin_frequency_indices]
-            self.frequency_bin_centres[bin_index] = np.mean(fftx_frequencies_this_bin)
+
+        start_frequency = 80
+        end_frequency = 2000
+        next_bin_max_frequency = start_frequency
+        next_bin_indices = []
+        bin_frequency_step = (end_frequency - start_frequency) / (self.n_frequency_bins - 2)
+        bin_index = 0
+        for i in range(0, len(self.fftx) + 1):
+
+            if i < len(self.fftx):
+                next_bin_indices.append(i)
+
+            if i == len(self.fftx) or self.fftx[i] > next_bin_max_frequency:
+                print(f'new bin of length {len(next_bin_indices)}')
+
+                bin_frequency_indices = next_bin_indices
+                self.fftx_indices_per_bin.append(bin_frequency_indices)
+                fftx_frequencies_this_bin = self.fftx[bin_frequency_indices]
+                self.frequency_bin_centres[bin_index] = np.mean(fftx_frequencies_this_bin)
+
+                print(f'bin index {bin_index} freq {self.frequency_bin_centres[bin_index]}')
+
+                bin_index += 1
+                if bin_index + 1 == self.n_frequency_bins:
+                    next_bin_max_frequency = 40000
+                else:
+                    next_bin_max_frequency += bin_frequency_step
+                next_bin_indices = []
+                print("done")
+
+
+
+        # for bin_index in range(self.n_frequency_bins):
+        #     bin_frequency_indices = np.where(self.fftx_bin_indices == bin_index)
+        #     self.fftx_indices_per_bin.append(bin_frequency_indices)
+        #     fftx_frequencies_this_bin = self.fftx[bin_frequency_indices]
+        #     self.frequency_bin_centres[bin_index] = np.mean(fftx_frequencies_this_bin)
 
         #Hardcoded parameters:
         self.fft_fps = 30

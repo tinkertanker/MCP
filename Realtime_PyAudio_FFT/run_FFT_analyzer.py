@@ -5,6 +5,41 @@ from light_control import LightControl
 import time
 import math
 
+light_to_bin_map = [
+        [ # side 0,
+            [ 19, 00, 00, 00, 00, 16, 16, 19, 19 ],
+            [ 19, 00, 00, 00, 00, 16, 16, 19, 19 ],
+            [ 19,  9,  9, 00, 00,  5,  5, 19, 19 ],
+            [ 19,  9,  9, 00, 00,  5,  5, 19, 19 ],
+            [ 19, 19, 19, 19, 19, 19, 19, 19, 19 ],
+        ],
+        [ # side 1 (left)
+            [ 19, 19, 19, 19, 19, 19, 19, 19, 19 ],
+            [ 19, 19, 19,  1,  1, 12, 12, 19, 19 ],
+            [ 19, 19, 19,  1,  1, 12, 12, 19, 19 ],
+            [ 19,  2,  2,  8,  8,  4,  4,  4, 19 ],
+            [ 19,  2,  2,  8,  8,  4,  4,  4, 19 ],
+            [ 19, 15, 15, 19, 19,  4,  4,  4, 19 ],
+            [ 19, 15, 15, 19, 19, 19, 19, 19, 19 ],
+        ],
+        [ # side 2 (right)
+            [ 19, 19, 19, 19, 17, 17, 19, 19, 13, 13, 13],
+            [ 19, 19, 19, 19, 17, 17, 19, 19, 13, 13, 13],
+            [ 14, 14, 10, 10,  6,  6, 11, 11, 13, 13, 13],
+            [ 14, 14, 10, 10,  6,  6, 11, 11, 19, 19, 19],
+            [ 19, 19,  7,  7, 18, 18,  3,  3,  3, 19, 19],
+            [ 19, 19,  7,  7, 18, 18,  3,  3,  3, 19, 19],
+            [ 19, 19, 19, 19, 19, 19,  3,  3,  3, 19, 19],
+        ]
+    ]
+
+bin_to_light_map = [[] for i in range (20)]
+
+for side in range(len(light_to_bin_map)):
+    for y in range(len(light_to_bin_map[side])):
+        for x in range(len(light_to_bin_map[side][y])):
+            bin_to_light_map[light_to_bin_map[side][y][x]].append((side,x,y))
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--device', type=int, default=None, dest='device',
@@ -32,6 +67,27 @@ def convert_window_ratio(window_ratio):
 
 def run_FFT_analyzer():
     args = parse_args()
+
+    lc = LightControl(simulate=True, alt_mapping=False)
+
+    for x in range(0,9):
+        for y in range(0,7):
+            lc.set_color(1, x, y, [x*25, y*25, 200])
+            lc.show()
+            time.sleep(0.01)
+
+    for x in range(0,11):
+        for y in range(0,7):
+            lc.set_color(2, x, y, [x*25, 200, y*25])
+            lc.show()
+            time.sleep(0.01)
+
+    for x in range(0,9):
+        for y in range(0,5):
+            lc.set_color(0, x, y, [200, x*25, y*25])
+            lc.show()
+            time.sleep(0.01)
+
     window_ratio = convert_window_ratio(args.window_ratio)
 
     ear = Stream_Analyzer(
@@ -61,22 +117,19 @@ def run_FFT_analyzer():
                 energy = frequency_bin_energies[i]
                 energy = max(energy, energy_threshold_low)
                 energy = min(energy, energy_threshold_high)
-                hue = 10 * energy / 360
-                color = colorsys.hsv_to_rgb(hue, 0.8, 1.0)
+                hue = 20 * energy / 360
+                color = colorsys.hsv_to_rgb(hue, 0.8, energy/energy_threshold_high)
                 r = int(color[0] * 255.0)
                 g = int(color[1] * 255.0)
                 b = int(color[2] * 255.0)
-                lc.set_color(2, math.floor(i/5), i%5, (r,g,b))
+                coordinates = bin_to_light_map[i]
+                for (side, x, y) in coordinates:
+                    lc.set_color(side, x, y, (r,g,b))
             lc.show()
 
         elif args.sleep_between_frames:
             time.sleep(max(0,((1./fps)-(time.time()-last_update)) * 0.99))
 
 if __name__ == '__main__':
-    lc = LightControl(simulate=True, alt_mapping=False)
-    for x in range(0,9):
-        for y in range(0,7):
-            lc.set_color(1, x, y, [x*25, y*25, 200])
-            lc.show()
-            time.sleep(0.01)
+
     run_FFT_analyzer()

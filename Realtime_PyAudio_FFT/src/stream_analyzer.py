@@ -178,6 +178,8 @@ class Stream_Analyzer:
                 print("\nAvg fft  delay: %.2fms  -- avg data delay: %.2fms" %(avg_fft_delay, avg_data_capture_delay))
                 print("Num data captures: %d (%.2ffps)-- num fft computations: %d (%.2ffps)"
                     %(self.stream_reader.num_data_captures, data_fps, self.num_ffts, self.fft_fps))
+                print(f'Strongest Frequency: {self.strongest_frequency}')
+                print(f'Bins: {self.frequency_bin_energies/self.bin_mean_values}')
 
             if self.visualize and self.visualizer._is_running:
                 self.visualizer.update()

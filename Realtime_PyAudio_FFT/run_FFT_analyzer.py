@@ -2,6 +2,7 @@ import argparse
 import colorsys
 from src.stream_analyzer import Stream_Analyzer
 from light_control import LightControl
+import socket
 import time
 import math
 
@@ -53,6 +54,7 @@ def parse_args():
                         help='float ratio of the visualizer window. e.g. 24/9')
     parser.add_argument('--sleep_between_frames', dest='sleep_between_frames', action='store_true',
                         help='when true process sleeps between frames to reduce CPU usage (recommended for low update rates)')
+    parser.add_argument('-n', '--hostname', type=str, help="Override Hostname", default='')
     return parser.parse_args()
 
 def convert_window_ratio(window_ratio):
@@ -65,10 +67,23 @@ def convert_window_ratio(window_ratio):
         return float_ratio
     raise ValueError('window_ratio should be in the format: float/float')
 
+def map_energy_to_hue(hostname, energy):
+    if hostname in ["marinapi1", "marinapi2"]:
+        if energy < 3:
+            return 290 - ((energy - 1) * (290 - 180) / 2.0) # 290 down to 180
+        else:
+            return 70 - ((energy - 3) * (70 - 40) / 2.0) # 70 down to 40
+    else:
+        if energy < 3:
+            return 160 - ((energy - 1) * (160 - 70) / 2.0) # 160 down to 70
+        else:
+            return (380 - ((energy - 3) * (380 - 300) / 2.0)) % 360 # 20 down to 300
+
 def run_FFT_analyzer():
     args = parse_args()
+    hostname = args.hostname or socket.gethostname()
 
-    lc = LightControl(simulate=False, alt_mapping=True)
+    lc = LightControl(simulate=True, alt_mapping=True)
 
     for x in range(0,9):
         for y in range(0,7):
@@ -116,7 +131,7 @@ def run_FFT_analyzer():
                 energy = frequency_bin_energies[i]
                 energy = max(energy, energy_threshold_low)
                 energy = min(energy, energy_threshold_high)
-                hue = (90 + 40 * energy) / 360
+                hue = map_energy_to_hue(hostname, energy) / 360.0
                 color = colorsys.hsv_to_rgb(hue, 0.8, (energy - 1.4)/energy_threshold_high)
                 r = int(color[0] * 255.0)
                 g = int(color[1] * 255.0)

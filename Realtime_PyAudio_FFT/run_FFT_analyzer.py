@@ -47,14 +47,14 @@ def parse_args():
                         help='pyaudio (portaudio) device index')
     parser.add_argument('--height', type=int, default=450, dest='height',
                         help='height, in pixels, of the visualizer window')
-    parser.add_argument('--n_frequency_bins', type=int, default=400, dest='frequency_bins',
+    parser.add_argument('--n_frequency_bins', type=int, default=20, dest='frequency_bins',
                         help='The FFT features are grouped in bins')
     parser.add_argument('--verbose', action='store_true')
     parser.add_argument('--window_ratio', default='24/9', dest='window_ratio',
                         help='float ratio of the visualizer window. e.g. 24/9')
-    parser.add_argument('--sleep_between_frames', dest='sleep_between_frames', action='store_true',
-                        help='when true process sleeps between frames to reduce CPU usage (recommended for low update rates)')
-    parser.add_argument('-n', '--hostname', type=str, help="Override Hostname", default='')
+    parser.add_argument('--hostname', type=str, help="Override Hostname", default='')
+    parser.add_argument("-a", "--alt-mapping", help="Alt LED Mapping", action="store_true",default=False)
+    parser.add_argument("-s", "--simulate", help="Enable Light Simulator", action="store_true", default=False)
     return parser.parse_args()
 
 def convert_window_ratio(window_ratio):
@@ -83,7 +83,7 @@ def run_FFT_analyzer():
     args = parse_args()
     hostname = args.hostname or socket.gethostname()
 
-    lc = LightControl(simulate=True, alt_mapping=True)
+    lc = LightControl(simulate=args.simulate, alt_mapping=args.alt_mapping)
 
     for x in range(0,9):
         for y in range(0,7):
@@ -141,7 +141,7 @@ def run_FFT_analyzer():
                     lc.set_color(side, x, y, (r,g,b))
             lc.show()
 
-        elif args.sleep_between_frames:
+        else:
             time.sleep(max(0,((1./fps)-(time.time()-last_update)) * 0.99))
 
 if __name__ == '__main__':

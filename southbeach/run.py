@@ -70,7 +70,7 @@ def convert_window_ratio(window_ratio):
     raise ValueError('window_ratio should be in the format: float/float')
 
 def map_energy_to_hue(hostname, energy):
-    if hostname in ["marinapi1", "marinapi2"]:
+    if hostname in ["marinapi3", "marinapi2"]:
         if energy < 3:
             return 290 - ((energy - 1) * (290 - 180) / 2.0) # 290 down to 180
         else:

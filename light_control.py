@@ -94,7 +94,7 @@ class Lights:
             if(side == 0):
                 index += self.side_0_offset
             
-            pixels[index + self.offset] = tuple(color)
+            pixels[index + self.offset] = tuple([color[1], color[0], color[2]])
 
     def clear(self):
         pixels.fill((0,0,0))

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import colorsys
 from src.stream_analyzer import Stream_Analyzer

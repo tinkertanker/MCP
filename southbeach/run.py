@@ -122,7 +122,7 @@ def run_FFT_analyzer():
 
     fps = 15  #How often to update the FFT features + display
     last_update = time.time()
-    energy_threshold_low = 1.5
+    energy_threshold_low = 1
     energy_threshold_high = 5
     while True:
         if (time.time() - last_update) > (1./fps):
@@ -134,7 +134,7 @@ def run_FFT_analyzer():
                 energy = max(energy, energy_threshold_low)
                 energy = min(energy, energy_threshold_high)
                 hue = map_energy_to_hue(hostname, energy) / 360.0
-                color = colorsys.hsv_to_rgb(hue, 0.8, (energy - 1.4)/energy_threshold_high)
+                color = colorsys.hsv_to_rgb(hue, 0.8, 0.05 + 0.95 * energy/energy_threshold_high)
                 r = int(color[0] * 255.0)
                 g = int(color[1] * 255.0)
                 b = int(color[2] * 255.0)

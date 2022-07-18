@@ -77,9 +77,9 @@ def map_energy_to_hue(hostname, energy):
             return 70 - ((energy - 3) * (70 - 40) / 2.0) # 70 down to 40
     else:
         if energy < 3:
-            return 160 - ((energy - 1) * (160 - 70) / 2.0) # 160 down to 70
+            return 120 - ((energy - 1) * (120 - 70) / 2.0) # 160 down to 70
         else:
-            return (380 - ((energy - 3) * (380 - 300) / 2.0)) % 360 # 20 down to 300
+            return (70 - ((energy - 3) * (70 - 0) / 2.0)) % 360 # 20 down to 300
 
 def run_FFT_analyzer():
     args = parse_args()

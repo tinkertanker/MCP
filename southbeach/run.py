@@ -72,7 +72,7 @@ def convert_window_ratio(window_ratio):
 def map_energy_to_hue(hostname, energy):
     if hostname in ["marinapi3", "marinapi2"]:
         if energy < 3:
-            return 290 - ((energy - 1) * (290 - 180) / 2.0) # 290 down to 180
+            return 250 - ((energy - 1) * (250 - 180) / 2.0) # 290 down to 180
         else:
             return 70 - ((energy - 3) * (70 - 40) / 2.0) # 70 down to 40
     else:
@@ -134,7 +134,9 @@ def run_FFT_analyzer():
                 energy = max(energy, energy_threshold_low)
                 energy = min(energy, energy_threshold_high)
                 hue = map_energy_to_hue(hostname, energy) / 360.0
-                color = colorsys.hsv_to_rgb(hue, 0.8, 0.05 + 0.95 * energy/energy_threshold_high)
+                if energy <= 1:
+                    energy = energy * energy
+                color = colorsys.hsv_to_rgb(hue, 0.8, 0.00 + 1 * energy/energy_threshold_high)
                 r = int(color[0] * 255.0)
                 g = int(color[1] * 255.0)
                 b = int(color[2] * 255.0)

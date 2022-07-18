@@ -74,12 +74,12 @@ def map_energy_to_hue(hostname, energy):
         if energy < 3:
             return 220 - ((energy - 1) * (220 - 180) / 2.0) # 290 down to 180
         else:
-            return 70 - ((energy - 3) * (70 - 40) / 2.0) # 70 down to 40
+            return 70 - ((energy - 2.5) * (70 - 40) / 2.5) # 70 down to 40
     else:
-        if energy < 3:
-            return 160 - ((energy - 1) * (160 - 70) / 2.0) # 160 down to 70
+        if energy < 2.5:
+            return 160 - ((energy - 0.0) * (160 - 70) / 2.5) # 160 down to 70
         else:
-            return (380 - ((energy - 3) * (380 - 300) / 2.0)) % 360 # 20 down to 300
+            return (380 - ((energy - 2.5) * (380 - 300) / 2.5)) % 360 # 20 down to 300
 
 def run_FFT_analyzer():
     args = parse_args()
@@ -122,7 +122,7 @@ def run_FFT_analyzer():
 
     fps = 15  #How often to update the FFT features + display
     last_update = time.time()
-    energy_threshold_low = 1
+    energy_threshold_low = 0.5
     energy_threshold_high = 5
     while True:
         if (time.time() - last_update) > (1./fps):

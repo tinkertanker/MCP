@@ -10,7 +10,7 @@ import socket
 import time
 import math
 
-GracefulKiller:
+class GracefulKiller:
     kill_now = False
     def __init__(self):
         signal.signal(signal.SIGINT, self.exit_gracefully)
@@ -96,7 +96,7 @@ def run_FFT_analyzer():
     args = parse_args()
     hostname = args.hostname or socket.gethostname()
     os.system('uhubctl -a on -l 2')
-    time.sleep(2)
+    time.sleep(5)
 
 
     lc = LightControl(simulate=args.simulate, alt_mapping=args.alt_mapping)

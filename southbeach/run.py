@@ -4,9 +4,20 @@ import argparse
 import colorsys
 from src.stream_analyzer import Stream_Analyzer
 from light_control import LightControl
+import os
+import signal
 import socket
 import time
 import math
+
+GracefulKiller:
+    kill_now = False
+    def __init__(self):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+    def exit_gracefully(self, *args):
+        self.kill_now = True
 
 light_to_bin_map = [
         [ # side 0,
@@ -84,6 +95,9 @@ def map_energy_to_hue(hostname, energy):
 def run_FFT_analyzer():
     args = parse_args()
     hostname = args.hostname or socket.gethostname()
+    os.system('uhubctl -a on -l 2')
+    time.sleep(2)
+
 
     lc = LightControl(simulate=args.simulate, alt_mapping=args.alt_mapping)
 
@@ -124,7 +138,10 @@ def run_FFT_analyzer():
     last_update = time.time()
     energy_threshold_low = 1
     energy_threshold_high = 5
-    while True:
+
+    graceful_killer = GracefulKiller()
+
+    while not graceful_killer.kill_now:
         if (time.time() - last_update) > (1./fps):
             last_update = time.time()
             raw_fftx, raw_fft, binned_fftx, binned_fft = ear.get_audio_features()
@@ -147,6 +164,10 @@ def run_FFT_analyzer():
 
         else:
             time.sleep(max(0,((1./fps)-(time.time()-last_update)) * 0.99))
+
+    lc.clear()
+    lc.show()
+    os.system('uhubctl -a off -l 2 -r 100')
 
 if __name__ == '__main__':
 
